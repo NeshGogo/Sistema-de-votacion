@@ -10,7 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Sistema_de_votacion.Data;
+using Sistema_de_votacion.Data.Candidates;
 using Sistema_de_votacion.Models;
+using Sistema_de_votacion.Services.Candidates;
 
 namespace Sistema_de_votacion
 {
@@ -37,6 +40,9 @@ namespace Sistema_de_votacion
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddScoped<ICandidateRepository, CandidateRepository>();
+            services.AddScoped<ICandidateService, CandidateService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

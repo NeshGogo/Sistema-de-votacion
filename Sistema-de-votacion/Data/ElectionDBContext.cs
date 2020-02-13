@@ -1,8 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Sistema_de_votacion.Models;
 
-namespace Sistema_de_votacion.Models
+namespace Sistema_de_votacion.Data
 {
     public partial class ElectionDBContext : DbContext
     {
@@ -15,7 +16,7 @@ namespace Sistema_de_votacion.Models
         {
         }
 
-        public virtual DbSet<Candidate> Candidate1 { get; set; }
+        public virtual DbSet<Candidate> Candidate { get; set; }
         public virtual DbSet<Citizen> Citizen { get; set; }
         public virtual DbSet<Election> Election { get; set; }
         public virtual DbSet<ElectionCadidate> ElectionCadidate { get; set; }
