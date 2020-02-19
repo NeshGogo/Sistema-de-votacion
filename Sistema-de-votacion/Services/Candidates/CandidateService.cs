@@ -19,7 +19,7 @@ namespace Sistema_de_votacion.Services.Candidates
         {
             return _candidateRepository.Insert(candidate);
         }
-        public Candidate GetCandidateById(int Id)
+        public Candidate GetCandidateById(int? Id)
         {
             return _candidateRepository.GetById(Id);
         }

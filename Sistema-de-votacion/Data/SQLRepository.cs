@@ -11,6 +11,17 @@ namespace Sistema_de_votacion.Data
         private readonly ElectionDBContext _context;
         private DbSet<T> _entities;
 
+        public virtual DbSet<T> Entities
+        {
+            get
+            {
+                if (_entities == null)
+                    _entities = _context.Set<T>();
+
+                return _entities;
+            }
+        }
+
         public SQLRepository(ElectionDBContext context)
         {
             _context = context;
@@ -111,15 +122,6 @@ namespace Sistema_de_votacion.Data
             return entities;
         }
 
-        public virtual DbSet<T> Entities
-        {
-            get
-            {
-                if (_entities == null)
-                    _entities = _context.Set<T>();
-
-                return _entities;
-            }
-        }
+        
     }
 }
