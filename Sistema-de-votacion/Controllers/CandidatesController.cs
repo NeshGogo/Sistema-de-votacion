@@ -30,7 +30,7 @@ namespace Sistema_de_votacion.Controllers
         // GET: Candidates
         public async Task<IActionResult> Index()
         {
-            var electionDBContext = _candidateService.GetCandidates().Include(c => c.PoliticParty).Include(c => c.Position);
+            var electionDBContext = _candidateService.GetCandidates().Where(c=>c.IsActive==true).OrderBy(c=>c.Name).Include(c => c.PoliticParty).Include(c => c.Position);
             return View(await electionDBContext.ToListAsync());
         }
 
@@ -161,7 +161,9 @@ namespace Sistema_de_votacion.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var candidate = await _candidateService.GetCandidates().FirstAsync(c=>c.Id==id);
-            _candidateService.DeleteCandidate(candidate);
+            candidate.IsActive = false;
+            _candidateService.UdateCandidate(candidate);
+            //_candidateService.DeleteCandidate(candidate);
             //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

@@ -9,11 +9,11 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Create</title>
+    <title>Crear</title>
 </head>
 <body>
 
-<h4>Candidate</h4>
+<h4>Candidato</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -44,18 +44,18 @@
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
+                    <input class="form-check-input" asp-for="IsActive" checked="checked" /> @Html.DisplayNameFor(model => model.IsActive)
                 </label>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Crear" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-primary">Regresar a lista</a>
 </div>
 
 </body>
