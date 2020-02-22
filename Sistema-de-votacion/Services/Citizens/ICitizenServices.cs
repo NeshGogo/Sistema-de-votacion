@@ -8,11 +8,11 @@ namespace Sistema_de_votacion.Services.Citizens
 {
     public interface ICitizenServices
     {
-        Citizen InsertCitizen(Citizen citizen);
-        IQueryable<Citizen> GetCitizen();
+        Task<Citizen> InsertCitizen(Citizen citizen);
+        Task<IQueryable<Citizen>> GetCitizens();
 
-        Citizen GetCitizenById(int? id);
-        Citizen UdateCitizen(Citizen citizen);
-        Citizen DeleteCitizen(Citizen citizen);
+        Task<Citizen> GetCitizenById(int? id);
+        Task<Citizen> UdateCitizen(Citizen citizen);
+        Task<Citizen> DeleteCitizen(Citizen citizen);
     }
 }

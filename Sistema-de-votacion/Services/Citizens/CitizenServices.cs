@@ -15,21 +15,21 @@ namespace Sistema_de_votacion.Services.Citizens
             _citizenRepository = citizenRepository;
         }
 
-        public Citizen DeleteCitizen(Citizen citizen)
+        public async Task<Citizen> DeleteCitizen(Citizen citizen)
         {
-           return _citizenRepository.Delete(citizen);
+           return await Task.FromResult( _citizenRepository.Delete(citizen));
         }
 
-        public IQueryable<Citizen> GetCitizen()
+        public async Task<IQueryable<Citizen>> GetCitizens()
         {
-            return _citizenRepository.GetAll();
+            return await Task.FromResult( _citizenRepository.GetAll());
         }
 
-        public Citizen GetCitizenById(int? id)
+        public async Task<Citizen> GetCitizenById(int? id)
         {
             if (id.HasValue)
             {
-                return _citizenRepository.GetById(id);
+                return await Task.FromResult( _citizenRepository.GetById(id) );
             }
             else
             {
@@ -37,14 +37,14 @@ namespace Sistema_de_votacion.Services.Citizens
             }            
         }
 
-        public Citizen InsertCitizen(Citizen citizen)
+        public async Task<Citizen> InsertCitizen(Citizen citizen)
         {
-            return _citizenRepository.Insert(citizen);
+            return await Task.FromResult( _citizenRepository.Insert(citizen) );
         }
 
-        public Citizen UdateCitizen(Citizen citizen)
+        public async Task<Citizen> UdateCitizen(Citizen citizen)
         {
-            return _citizenRepository.Update(citizen);
+            return await Task.FromResult( _citizenRepository.Update(citizen) );
         }
     }
 }
