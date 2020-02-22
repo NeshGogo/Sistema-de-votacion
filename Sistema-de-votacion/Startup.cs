@@ -12,11 +12,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sistema_de_votacion.Data;
 using Sistema_de_votacion.Data.Candidates;
+using Sistema_de_votacion.Data.Citizens;
 using Sistema_de_votacion.Data.PoliticParties;
 using Sistema_de_votacion.Data.Positions;
 using Sistema_de_votacion.Models;
 using Sistema_de_votacion.Services.Candidates;
 using Sistema_de_votacion.Services.Candidates.Positions;
+using Sistema_de_votacion.Services.Citizens;
 using Sistema_de_votacion.Services.PoliticParties;
 
 namespace Sistema_de_votacion
@@ -51,6 +53,8 @@ namespace Sistema_de_votacion
             services.AddScoped<ICandidateService, CandidateService>();
             services.AddScoped<IPoliticPartyService, PoliticPartyService>();
             services.AddScoped<IPositionService, PositionService>();
+            services.AddScoped<ICitizenRepository, CitizenRepository>();
+            services.AddScoped<ICitizenServices, CitizenServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
