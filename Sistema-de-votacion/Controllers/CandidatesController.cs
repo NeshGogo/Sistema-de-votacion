@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,8 @@ using Sistema_de_votacion.Models;
 using Sistema_de_votacion.Services.Candidates;
 using Sistema_de_votacion.Services.Candidates.Positions;
 using Sistema_de_votacion.Services.PoliticParties;
+using Sistema_de_votacion.ViewModels;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Sistema_de_votacion.Controllers
 {
@@ -18,13 +21,15 @@ namespace Sistema_de_votacion.Controllers
         private readonly ICandidateService _candidateService;
         private readonly IPoliticPartyService _politicPartyService;
         private readonly IPositionService _positionService;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public CandidatesController(ICandidateService candidateService,IPoliticPartyService politicPartyService, IPositionService positionService)
+        public CandidatesController(ICandidateService candidateService,IPoliticPartyService politicPartyService, IPositionService positionService, IHostingEnvironment hostingEnvironment)
         {
             //_context = context;
             this._candidateService = candidateService;
             this._politicPartyService = politicPartyService;
             this._positionService = positionService;
+            this._hostingEnvironment = hostingEnvironment;
         }
 
         // GET: Candidates
@@ -67,17 +72,28 @@ namespace Sistema_de_votacion.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,LastName,PoliticPartyId,PositionId,ProfilePhothoPath,IsActive")] Candidate candidate)
+        public async Task<IActionResult> Create([Bind("Id,Name,LastName,PoliticPartyId,PositionId,ProfilePhothoPath,IsActive")] CandidateCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
+                string uniqueFileName = ProcessUploadedFile(model);
+                Candidate candidate = new Candidate
+                {
+                    Name = model.Name,
+                    LastName = model.LastName,
+                    PoliticPartyId = model.PoliticPartyId,
+                    PositionId = model.PositionId,
+                    ProfilePhothoPath = uniqueFileName,
+                    IsActive = model.IsActive
+
+                };
                 _candidateService.InsertCandidate(candidate);
                 //await _candidateService.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PoliticPartyId"] = new SelectList(_politicPartyService.GetPoliticParties(), "Id", "Description", candidate.PoliticPartyId);
-            ViewData["PositionId"] = new SelectList(_positionService.GetPositions(), "Id", "Description", candidate.PositionId);
-            return View(candidate);
+            ViewData["PoliticPartyId"] = new SelectList(_politicPartyService.GetPoliticParties(), "Id", "Description", model.PoliticPartyId);
+            ViewData["PositionId"] = new SelectList(_positionService.GetPositions(), "Id", "Description", model.PositionId);
+            return View(model);
         }
 
         // GET: Candidates/Edit/5
@@ -171,6 +187,23 @@ namespace Sistema_de_votacion.Controllers
         private bool CandidateExists(int id)
         {
             return _candidateService.GetCandidates().Any(e => e.Id == id);
+        }
+        private string ProcessUploadedFile(CandidateCreateViewModel model)
+        {
+            string uniqueFileName = null;
+            if (model.ProfilePhothoPath != null)
+            {
+                string uploadFolder = Path.Combine(_hostingEnvironment.WebRootPath, "Images");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfilePhothoPath.FileName;
+                string filePath = Path.Combine(uploadFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.ProfilePhothoPath.CopyTo(fileStream);
+                }
+
+            }
+
+            return uniqueFileName;
         }
     }
 }
