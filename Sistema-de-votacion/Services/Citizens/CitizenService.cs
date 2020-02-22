@@ -3,21 +3,27 @@ using Sistema_de_votacion.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Sistema_de_votacion.Services.Citizens
 {
-    public class CitizenServices: ICitizenServices
+    public class CitizenService: ICitizenService
     {
         private readonly ICitizenRepository _citizenRepository;
-        public CitizenServices(ICitizenRepository citizenRepository)
+        public CitizenService(ICitizenRepository citizenRepository)
         {
             _citizenRepository = citizenRepository;
+        }
+        public async Task<IQueryable<Citizen>> GetCitizenByCondition(Expression<Func<Citizen, bool>> predicate)
+        {
+            return await Task.FromResult( _citizenRepository.GetAll().Where(predicate) );
         }
 
         public async Task<Citizen> DeleteCitizen(Citizen citizen)
         {
-           return await Task.FromResult( _citizenRepository.Delete(citizen));
+            citizen.IsActive = false;
+           return await Task.FromResult( _citizenRepository.Update(citizen));
         }
 
         public async Task<IQueryable<Citizen>> GetCitizens()

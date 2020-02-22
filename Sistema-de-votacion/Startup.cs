@@ -54,7 +54,7 @@ namespace Sistema_de_votacion
             services.AddScoped<IPoliticPartyService, PoliticPartyService>();
             services.AddScoped<IPositionService, PositionService>();
             services.AddScoped<ICitizenRepository, CitizenRepository>();
-            services.AddScoped<ICitizenServices, CitizenServices>();
+            services.AddScoped<ICitizenService, CitizenService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

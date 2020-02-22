@@ -5,10 +5,17 @@
 }
 
 <h1>Index</h1>
+<div class="d-flex justify-content-between">
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+    <form asp-action="Index" method="post" class="form">
+        <input name="activeParam" type="checkbox" class="form-control-sm" />
+        <span>Activo</span>
+        <input class="btn btn-sm btn-light" type="submit" value="Buscar" />
+    </form>   
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -25,7 +32,7 @@
                 @Html.DisplayNameFor(model => model.Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsActive)
+                @Html.DisplayNameFor(model => model.IsActive)                 
             </th>
             <th></th>
         </tr>

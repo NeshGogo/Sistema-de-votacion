@@ -13,9 +13,9 @@ namespace Sistema_de_votacion.Controllers
 {
     public class CitizensController : Controller
     {
-        private readonly ICitizenServices _citizenServices;
+        private readonly ICitizenService _citizenServices;
 
-        public CitizensController(ICitizenServices citizenServices)
+        public CitizensController(ICitizenService citizenServices)
         {
             _citizenServices = citizenServices;
         }
@@ -23,9 +23,23 @@ namespace Sistema_de_votacion.Controllers
         // GET: Citizens
         public async Task<IActionResult> Index()
         {
-            var citizens = await _citizenServices.GetCitizens();
+            var citizens = await _citizenServices.GetCitizenByCondition(c => c.IsActive == true );
+            return View( citizens.ToList());
+        }
+        [HttpPost]
+        public async Task<IActionResult> Index( string activeParam)
+        {
+            IQueryable<Citizen> citizens;
 
-            return View( citizens.ToListAsync());
+            if (activeParam == "on") {
+                citizens = await _citizenServices.GetCitizenByCondition(c => c.IsActive == true);
+            }
+            else
+            {
+                citizens = await _citizenServices.GetCitizenByCondition(c => c.IsActive == false);
+            }            
+
+            return View(citizens.ToList());
         }
 
         // GET: Citizens/Details/5
@@ -146,7 +160,10 @@ namespace Sistema_de_votacion.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var citizen = await _citizenServices.GetCitizenById(id);
-           await  _citizenServices.DeleteCitizen(citizen);
+            if (citizen != null)
+            {
+                await _citizenServices.DeleteCitizen(citizen);
+            }          
           
             return RedirectToAction(nameof(Index));
         }
