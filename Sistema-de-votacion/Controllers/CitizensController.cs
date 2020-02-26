@@ -24,7 +24,7 @@ namespace Sistema_de_votacion.Controllers
         public async Task<IActionResult> Index()
         {
             var citizens = await _citizenServices.GetCitizenByCondition(c => c.IsActive == true );
-            return View( citizens.ToList());
+            return View( citizens.ToList().OrderBy(c => new { c.Name, c.LastName }));
         }
         [HttpPost]
         public async Task<IActionResult> Index( string activeParam)
@@ -63,7 +63,7 @@ namespace Sistema_de_votacion.Controllers
         // GET: Citizens/Create
         public IActionResult Create()
         {
-            return View();
+            return View("Form");
         }
 
         // POST: Citizens/Create
@@ -75,6 +75,7 @@ namespace Sistema_de_votacion.Controllers
         {
             if (ModelState.IsValid)
             {
+                citizen.IsActive = true;
                  var newCitizen = await _citizenServices.InsertCitizen(citizen);
                 if (newCitizen != null)
                 {
@@ -82,7 +83,7 @@ namespace Sistema_de_votacion.Controllers
                 }                
                 
             }
-            return View(citizen);
+            return View("Form",citizen);
         }
 
         // GET: Citizens/Edit/5
@@ -98,7 +99,7 @@ namespace Sistema_de_votacion.Controllers
             {
                 return NotFound();
             }
-            return View(citizen);
+            return View("Form", citizen);
         }
 
         // POST: Citizens/Edit/5
@@ -133,7 +134,7 @@ namespace Sistema_de_votacion.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(citizen);
+            return View("Form", citizen);
         }
 
         // GET: Citizens/Delete/5

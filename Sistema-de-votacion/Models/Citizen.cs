@@ -13,7 +13,7 @@ namespace Sistema_de_votacion.Models
 
         public int Id { get; set; }
         [Required(ErrorMessage ="Este campo es requerido")]
-        [Display(Name ="DNI")]
+        [Display(Name ="Cedula de Identidad")]
         [StringLength(11, ErrorMessage ="Detener un maximo y un minimo de 11 caracteres.")]
         public string Dni { get; set; }
 

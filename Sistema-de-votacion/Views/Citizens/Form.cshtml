@@ -1,16 +1,29 @@
 ﻿@model Sistema_de_votacion.Models.Citizen
 
 @{
-    ViewData["Title"] = "Create";
+    if (Model == null)
+    {
+        ViewData["Title"] = "Crear";
+    }
+    else
+    {
+        ViewData["Title"] = "Actualizar";
+    }
+
 }
 
-<h1>Create</h1>
+    <h1>@(Model != null ? "Actualizar" : "Añadir") ciudadanos al padron.</h1>
 
-<h4>Citizen</h4>
+<h6>Ciudadanos</h6>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="@(Model!= null? "Edit" : "Create")">
+            @if (Model != null)
+            {
+                <input type="hidden" asp-for="Id" />
+            }
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Dni" class="control-label"></label>
@@ -32,20 +45,23 @@
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
+
+            @if (Model != null && Model.IsActive == false)
+            {
+                <label class="form-group form-check">
+                    <input asp-for="IsActive" class="form-check-input" /> @Html.DisplayNameFor(model => model.IsActive)
                 </label>
-            </div>
+            }
+
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="@(Model!= null? "Actualizar" : "Crear")" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class=" text-black-50">Volver al listados</a>
 </div>
 
 @section Scripts {
