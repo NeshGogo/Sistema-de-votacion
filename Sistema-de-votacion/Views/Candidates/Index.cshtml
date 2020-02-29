@@ -8,7 +8,7 @@
 <div class="card-deck">
     @foreach (var candidate in Model)
     {
-        var photoPath = "~/images/Anonimo.jpg" /*+ (candidate.ProfilePhothoPath ?? "Anonimo.jpg")*/;
+        var photoPath = "~/images/" + (candidate.ProfilePhothoPath ?? "Anonimo.jpg");
         <div class="card m-3" style="min-width:12rem; max-width:22.5%">
             <div class="card-header text-center">
                 <h3>@(candidate.Name + " " + candidate.LastName)</h3>
