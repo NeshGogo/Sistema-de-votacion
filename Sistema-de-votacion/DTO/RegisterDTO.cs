@@ -13,15 +13,18 @@ namespace Sistema_de_votacion.DTO
         [StringLength(50, ErrorMessage = "La longitud maxima de caracteres es de 50.")]
         public string UserName { get; set; }
 
-        [Display(Name = "Nombre")]
-        [Required(ErrorMessage = "Este campo es requerido.")]
-        [StringLength(50, ErrorMessage = "La longitud maxima de caracteres es de 50.")]
-        public string Nombre { get; set; }
+        
 
         [Display(Name = "Correo electronico")]
         [Required(ErrorMessage = "Este campo es requerido.")]
         [DataType(DataType.EmailAddress, ErrorMessage ="Debe introducir un correo electronico valido.")]
         public string Email { get; set; }
+
+        [Display(Name = "Confirme el correo electronico")]
+        [Required(ErrorMessage = "Este campo es requerido.")]
+        [DataType(DataType.EmailAddress, ErrorMessage = "Debe introducir un correo electronico valido.")]
+        [Compare("Email",ErrorMessage ="La direcciones de correo electronico no son iguales.")]
+        public string EmailConfirm { get; set; }
 
         [Display(Name = "Contraseña")]
         [Required(ErrorMessage = "Este campo es requerido.")]

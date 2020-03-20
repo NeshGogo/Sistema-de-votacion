@@ -39,7 +39,16 @@ namespace Sistema_de_votacion
             services.AddDbContextPool<ElectionDBContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("ElectionDBConnection")));
             //Inyeccion de dependencia de Identity.
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ElectionDBContext>();
+            services.AddIdentity<IdentityUser, IdentityRole>(o => 
+            {
+                o.Password.RequireDigit = false;
+                o.Password.RequireLowercase = false;
+                o.Password.RequireUppercase = false;
+                o.Password.RequireNonAlphanumeric = false;
+                o.Password.RequiredLength = 5;
+            })
+            .AddEntityFrameworkStores<ElectionDBContext>()
+            .AddDefaultTokenProviders();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
