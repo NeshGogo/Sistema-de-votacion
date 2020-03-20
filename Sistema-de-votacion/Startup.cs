@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -37,6 +38,9 @@ namespace Sistema_de_votacion
         {
             services.AddDbContextPool<ElectionDBContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("ElectionDBConnection")));
+            //Inyeccion de dependencia de Identity.
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ElectionDBContext>();
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -74,7 +78,8 @@ namespace Sistema_de_votacion
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
+            app.UseAuthentication();
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
