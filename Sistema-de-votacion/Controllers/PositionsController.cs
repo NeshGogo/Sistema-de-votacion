@@ -23,7 +23,7 @@ namespace Sistema_de_votacion.Controllers
         // GET: Positions
         public async Task<IActionResult> Index()
         {
-            return View(await _positionService.GetPositions().ToListAsync());
+            return View(await _positionService.GetPositions().Where(p => p.IsActive == true).ToListAsync());
         }
 
         // GET: Positions/Details/5
@@ -47,23 +47,21 @@ namespace Sistema_de_votacion.Controllers
         // GET: Positions/Create
         public IActionResult Create()
         {
-            return View();
+            return View("Form");
         }
 
-        // POST: Positions/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,IsActive")] Position position)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Position position)
         {
             if (ModelState.IsValid)
             {
-               await  Task.FromResult(_positionService.InsertPosition(position));
+                position.IsActive = true;
+                await  Task.FromResult(_positionService.InsertPosition(position));
                
                 return RedirectToAction(nameof(Index));
             }
-            return View(position);
+            return View("Form",position);
         }
 
         // GET: Positions/Edit/5
@@ -79,12 +77,9 @@ namespace Sistema_de_votacion.Controllers
             {
                 return NotFound();
             }
-            return View(position);
+            return View("Form",position);
         }
 
-        // POST: Positions/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,IsActive")] Position position)
@@ -97,7 +92,7 @@ namespace Sistema_de_votacion.Controllers
             if (ModelState.IsValid)
             {
                 try
-                {
+                {                    
                     await Task.FromResult(_positionService.UdatePosition(position));
                     
                 }
@@ -114,7 +109,7 @@ namespace Sistema_de_votacion.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(position);
+            return View("Form",position);
         }
 
         // GET: Positions/Delete/5

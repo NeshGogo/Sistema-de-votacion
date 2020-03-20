@@ -1,17 +1,33 @@
 ﻿@model Sistema_de_votacion.Models.Position
 
 @{
-    ViewData["Title"] = "Create";
+    string action;
+    if (Model== null)
+    {
+        ViewData["Title"] = "Crear";
+        action = "create";
+    }
+    else
+    {
+        ViewData["Title"] = "Actulizar";
+        action = "Edit";
+    }
+
 }
 
-<h1>Create</h1>
+<h1 class="display-4 text-center">@ViewBag.Title posicion politica.</h1>
 
-<h4>Position</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="@action" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (Model != null)
+            {
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="IsActive"/>
+            }
+
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -22,21 +38,17 @@
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
-                </label>
-            </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="@ViewBag.Title" class="btn btn-primary" />
+            </div>
+            <div>
+                <a class="ml-0 text-black-50 nav-link" asp-action="Index">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

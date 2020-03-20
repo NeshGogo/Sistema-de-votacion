@@ -34,7 +34,8 @@ namespace Sistema_de_votacion.Services.Candidates.Positions
         }
         public Position DeletePosition(Position position)
         {
-            return _positionRepository.Delete(position);
+            position.IsActive = false;
+            return _positionRepository.Update(position);
         }
 
     }
