@@ -2,27 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sistema_de_votacion.Data;
+using Sistema_de_votacion.Data.PoliticParties;
 using Sistema_de_votacion.Models;
+using Sistema_de_votacion.Services.PoliticParties;
 
 namespace Sistema_de_votacion.Controllers
 {
     public class PoliticPartiesController : Controller
     {
-        private readonly ElectionDBContext _context;
+        private readonly IPoliticPartyService _politicPartyService;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public PoliticPartiesController(ElectionDBContext context)
+        public PoliticPartiesController(IPoliticPartyService politicPartyService, IHostingEnvironment hostingEnvironment)
         {
-            _context = context;
+            this._politicPartyService = politicPartyService;
+            this._hostingEnvironment = hostingEnvironment;
         }
 
         // GET: PoliticParties
         public async Task<IActionResult> Index()
         {
-            return View(await _context.PoliticParty.ToListAsync());
+            return View(await _politicPartyService.GetPoliticParties().ToListAsync());
         }
 
         // GET: PoliticParties/Details/5
@@ -33,7 +38,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var politicParty = await _context.PoliticParty
+            var politicParty = await _politicPartyService.GetPoliticParties()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (politicParty == null)
             {
@@ -54,12 +59,11 @@ namespace Sistema_de_votacion.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,PartyLogoPath,IsActive")] PoliticParty politicParty)
+        public async Task<IActionResult> Create(/*[Bind("Id,Name,Description,PartyLogoPath,IsActive")]*/ PoliticParty politicParty)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(politicParty);
-                await _context.SaveChangesAsync();
+                _politicPartyService.InsertPoliticParty(politicParty);
                 return RedirectToAction(nameof(Index));
             }
             return View(politicParty);
@@ -73,7 +77,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var politicParty = await _context.PoliticParty.FindAsync(id);
+            var politicParty = await _politicPartyService.GetPoliticParties().FirstOrDefaultAsync(pp=>pp.Id==id);
             if (politicParty == null)
             {
                 return NotFound();
@@ -86,7 +90,7 @@ namespace Sistema_de_votacion.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,PartyLogoPath,IsActive")] PoliticParty politicParty)
+        public async Task<IActionResult> Edit(int id,/* [Bind("Id,Name,Description,PartyLogoPath,IsActive")]*/ PoliticParty politicParty)
         {
             if (id != politicParty.Id)
             {
@@ -97,8 +101,8 @@ namespace Sistema_de_votacion.Controllers
             {
                 try
                 {
-                    _context.Update(politicParty);
-                    await _context.SaveChangesAsync();
+                    _politicPartyService.UdatePoliticParty(politicParty);
+                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -124,7 +128,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var politicParty = await _context.PoliticParty
+            var politicParty = await _politicPartyService.GetPoliticParties()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (politicParty == null)
             {
@@ -139,15 +143,14 @@ namespace Sistema_de_votacion.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var politicParty = await _context.PoliticParty.FindAsync(id);
-            _context.PoliticParty.Remove(politicParty);
-            await _context.SaveChangesAsync();
+            var politicParty = await _politicPartyService.GetPoliticParties().FirstOrDefaultAsync(pp=>pp.Id==id);
+            _politicPartyService.DeletePoliticParty(politicParty);
             return RedirectToAction(nameof(Index));
         }
 
         private bool PoliticPartyExists(int id)
         {
-            return _context.PoliticParty.Any(e => e.Id == id);
+            return _politicPartyService.GetPoliticParties().Any(e => e.Id == id);
         }
     }
 }
