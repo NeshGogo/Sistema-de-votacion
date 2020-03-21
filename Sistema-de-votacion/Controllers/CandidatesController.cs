@@ -13,9 +13,11 @@ using Sistema_de_votacion.Services.Candidates.Positions;
 using Sistema_de_votacion.Services.PoliticParties;
 using Sistema_de_votacion.ViewModels;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Sistema_de_votacion.Controllers
 {
+    [Authorize]
     public class CandidatesController : Controller
     {
         private readonly ICandidateService _candidateService;

@@ -29,7 +29,7 @@ namespace Sistema_de_votacion.Controllers
             {
                var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, false, false);
                 if (result.Succeeded)
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "AdminitrationHome");
                 ModelState.AddModelError(string.Empty, "El usuario o la contraseña son incorrectos.");
             }
             return View(login);
@@ -48,7 +48,7 @@ namespace Sistema_de_votacion.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "AdminitrationHome");
                 }
                 foreach (var item in result.Errors)
                 {
@@ -57,9 +57,10 @@ namespace Sistema_de_votacion.Controllers
             }
             return View(register);
         }
-        public IActionResult Logout()
+        public async Task< IActionResult> Logout()
         {
-            return View();
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login", "Account");
         }
 
     }

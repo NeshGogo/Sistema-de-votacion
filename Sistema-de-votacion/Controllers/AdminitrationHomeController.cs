@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sistema_de_votacion.Models;
 
 namespace Sistema_de_votacion.Controllers
 {
-    public class HomeController : Controller
+    [Authorize]
+    public class AdminitrationHomeController : Controller
     {
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
         {
             return View();
         }

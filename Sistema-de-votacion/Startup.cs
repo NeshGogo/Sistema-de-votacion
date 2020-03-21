@@ -93,7 +93,7 @@ namespace Sistema_de_votacion
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=AdminitrationHome}/{action=Index}/{id?}");
             });
         }
     }

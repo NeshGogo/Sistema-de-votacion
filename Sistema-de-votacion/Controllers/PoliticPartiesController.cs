@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ using Sistema_de_votacion.Services.PoliticParties;
 
 namespace Sistema_de_votacion.Controllers
 {
+    [Authorize]
     public class PoliticPartiesController : Controller
     {
         private readonly IPoliticPartyService _politicPartyService;
