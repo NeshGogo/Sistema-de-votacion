@@ -16,11 +16,13 @@ using Sistema_de_votacion.Data.Candidates;
 using Sistema_de_votacion.Data.Citizens;
 using Sistema_de_votacion.Data.PoliticParties;
 using Sistema_de_votacion.Data.Positions;
+using Sistema_de_votacion.Data.Elections;
 using Sistema_de_votacion.Models;
 using Sistema_de_votacion.Services.Candidates;
 using Sistema_de_votacion.Services.Candidates.Positions;
 using Sistema_de_votacion.Services.Citizens;
 using Sistema_de_votacion.Services.PoliticParties;
+using Sistema_de_votacion.Services.Elections;
 
 namespace Sistema_de_votacion
 {
@@ -68,6 +70,8 @@ namespace Sistema_de_votacion
             services.AddScoped<IPositionService, PositionService>();
             services.AddScoped<ICitizenRepository, CitizenRepository>();
             services.AddScoped<ICitizenService, CitizenService>();
+            services.AddScoped<IElectionRepository, ElectionRepository>();
+            services.AddScoped<IElectionService, ElectionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
