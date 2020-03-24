@@ -1,8 +1,5 @@
-﻿@model Sistema_de_votacion.Models.Election
+﻿@model Sistema_de_votacion.ViewModels.ElectionCreateViewModel
 
-@{
-    Layout = null;
-}
 
 <!DOCTYPE html>
 
@@ -13,40 +10,63 @@
 </head>
 <body>
 
-<h4>Election</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+    <h4 class="display-4 text-center">Crear una nueva election</h4>
+    <hr />
+    <form asp-action="Create" class="mt-5">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row justify-content-xl-center">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div>
+                        <label asp-for="ElectionCadidate" class="control-label"></label>
+                    </div>
+                    <select class="form-control" asp-for="ElectionCadidate" asp-items="ViewBag.Candidates" multiple></select>
+                    <span asp-validation-for="ElectionCadidate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div>
+                        <label asp-for="ElectionPosition" class="control-label"></label>
+                    </div>
+                    <select class="form-control" asp-for="ElectionPosition" asp-items="ViewBag.Positions" multiple></select>
+                    <span asp-validation-for="ElectionPosition" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" class="form-control" />
-                <span asp-validation-for="Date" class="text-danger"></span>
+
+            <div class=" col-md-4" style="margin-top:86px;">
+                <div class="form-group">
+                    <div>
+                        <label asp-for="ElectionPoliticParty" class="control-label"></label>
+                    </div>
+                    <select class="form-control" asp-for="ElectionPoliticParty" asp-items="ViewBag.PoliticParies" multiple></select>
+                    <span asp-validation-for="ElectionPoliticParty" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div>
+                        <label asp-for="ElectionCitizen" class="control-label"></label>
+                    </div>
+                    <select class="form-control" asp-for="ElectionCitizen" asp-items="ViewBag.Citizens" multiple></select>
+                    <span asp-validation-for="ElectionCitizen" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+        <div class="form-group text-center">
+            <input type="submit" value="Crear" class="btn btn-primary" /> 
+            <span>||</span>
+            <a  class="btn btn-secondary" asp-action="Index">Volver</a>
+        </div>
+    </form>
+
+    <div>
+       
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
 </body>
 </html>

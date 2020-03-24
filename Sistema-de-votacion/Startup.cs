@@ -23,6 +23,11 @@ using Sistema_de_votacion.Services.Candidates.Positions;
 using Sistema_de_votacion.Services.Citizens;
 using Sistema_de_votacion.Services.PoliticParties;
 using Sistema_de_votacion.Services.Elections;
+using AutoMapper;
+using Sistema_de_votacion.Data.ElectionCandidates;
+using Sistema_de_votacion.Data.ElectionPositions;
+using Sistema_de_votacion.Data.ElectionCitizens;
+using Sistema_de_votacion.Data.ElectionPoliticParties;
 
 namespace Sistema_de_votacion
 {
@@ -59,6 +64,7 @@ namespace Sistema_de_votacion
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -72,6 +78,10 @@ namespace Sistema_de_votacion
             services.AddScoped<ICitizenService, CitizenService>();
             services.AddScoped<IElectionRepository, ElectionRepository>();
             services.AddScoped<IElectionService, ElectionService>();
+            services.AddScoped<IElectionCandidateRepository, ElectionCandidateRepository>();
+            services.AddScoped<IElectionPositionRepository, ElectionPositionRepository>();
+            services.AddScoped<IElectionCitizenRepository, ElectionCitizenRepository>();
+            services.AddScoped<IElectionPoliticPartyRepository, ElectionPoliticPartyRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

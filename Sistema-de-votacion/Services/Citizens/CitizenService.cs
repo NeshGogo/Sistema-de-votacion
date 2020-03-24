@@ -15,23 +15,23 @@ namespace Sistema_de_votacion.Services.Citizens
         {
             _citizenRepository = citizenRepository;
         }
-        public async Task<IQueryable<Citizen>> GetCitizenByCondition(Expression<Func<Citizen, bool>> predicate)
+        public async Task<IQueryable<Citizen>> GetCitizenByConditionAsync(Expression<Func<Citizen, bool>> predicate)
         {
             return await Task.FromResult( _citizenRepository.GetAll().Where(predicate) );
         }
 
-        public async Task<Citizen> DeleteCitizen(Citizen citizen)
+        public async Task<Citizen> DeleteCitizenAsync(Citizen citizen)
         {
             citizen.IsActive = false;
            return await Task.FromResult( _citizenRepository.Update(citizen));
         }
 
-        public async Task<IQueryable<Citizen>> GetCitizens()
+        public async Task<IQueryable<Citizen>> GetCitizensAsync()
         {
             return await Task.FromResult( _citizenRepository.GetAll());
         }
 
-        public async Task<Citizen> GetCitizenById(int? id)
+        public async Task<Citizen> GetCitizenByIdAsync(int? id)
         {
             if (id.HasValue)
             {
@@ -43,12 +43,12 @@ namespace Sistema_de_votacion.Services.Citizens
             }            
         }
 
-        public async Task<Citizen> InsertCitizen(Citizen citizen)
+        public async Task<Citizen> InsertCitizenAsync(Citizen citizen)
         {
             return await Task.FromResult( _citizenRepository.Insert(citizen) );
         }
 
-        public async Task<Citizen> UdateCitizen(Citizen citizen)
+        public async Task<Citizen> UdateCitizenAsync(Citizen citizen)
         {
             return await Task.FromResult( _citizenRepository.Update(citizen) );
         }

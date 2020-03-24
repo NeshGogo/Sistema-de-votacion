@@ -9,12 +9,12 @@ namespace Sistema_de_votacion.Services.Citizens
 {
     public interface ICitizenService
     {
-        Task<Citizen> InsertCitizen(Citizen citizen);
-        Task<IQueryable<Citizen>> GetCitizens();
+        Task<Citizen> InsertCitizenAsync(Citizen citizen);
+        Task<IQueryable<Citizen>> GetCitizensAsync();
 
-        Task<Citizen> GetCitizenById(int? id);
-        Task<Citizen> UdateCitizen(Citizen citizen);
-        Task<Citizen> DeleteCitizen(Citizen citizen);
-        Task<IQueryable<Citizen>> GetCitizenByCondition(Expression<Func<Citizen, bool>> predicate);
+        Task<Citizen> GetCitizenByIdAsync(int? id);
+        Task<Citizen> UdateCitizenAsync(Citizen citizen);
+        Task<Citizen> DeleteCitizenAsync(Citizen citizen);
+        Task<IQueryable<Citizen>> GetCitizenByConditionAsync(Expression<Func<Citizen, bool>> predicate);
     }
 }

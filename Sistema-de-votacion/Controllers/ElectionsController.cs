@@ -2,22 +2,39 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sistema_de_votacion.Data;
 using Sistema_de_votacion.Models;
+using Sistema_de_votacion.Services.Candidates;
+using Sistema_de_votacion.Services.Candidates.Positions;
+using Sistema_de_votacion.Services.Citizens;
 using Sistema_de_votacion.Services.Elections;
+using Sistema_de_votacion.Services.PoliticParties;
+using Sistema_de_votacion.ViewModels;
 
 namespace Sistema_de_votacion.Controllers
 {
     public class ElectionsController : Controller
     {
         private readonly IElectionService _electionService;
+        private readonly IPositionService _positionService;
+        private readonly ICandidateService _candidateService;
+        private readonly IPoliticPartyService _politicPartyService;
+        private readonly ICitizenService _citizenService;
+        private readonly IMapper _mapper;
 
-        public ElectionsController(IElectionService electionService)
+        public ElectionsController(IElectionService electionService, IPositionService positionService, ICandidateService candidateService, 
+                                    IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper)
         {
             _electionService = electionService;
+            _positionService = positionService;
+            _candidateService = candidateService;
+            _politicPartyService = politicPartyService;
+            _citizenService = citizenService;
+            _mapper = mapper;
         }
 
         // GET: Elections
@@ -46,22 +63,33 @@ namespace Sistema_de_votacion.Controllers
         }
 
         // GET: Elections/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var candidates = _candidateService.GetCandidates().Where(c => c.IsActive == true).Select(c => new { c.Id, Name = $"{c.Name} {c.Name}" });
+            var citizens = (await _citizenService.GetCitizenByConditionAsync(c => c.IsActive == true)).Select(c => new { c.Id, Name = $"{c.Name}  {c.LastName}" });
+            ViewBag.Citizens = new MultiSelectList(citizens, "Id", "Name");
+            ViewBag.Positions = new MultiSelectList( _positionService.GetPositions().Where(p => p.IsActive == true), "Id", "Name");
+            ViewBag.Candidates = new MultiSelectList(candidates, "Id", "Name");
+            ViewBag.PoliticParties = new MultiSelectList(_politicPartyService.GetPoliticParties().Where(pp => pp.IsActive == true), "Id", "Name");
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Date,IsActive")] Election election)
+        public async Task<IActionResult> Create( ElectionCreateViewModel electionViewModel)
         {
             if (ModelState.IsValid)
-            {
-
-                await _electionService.InsertElection(election);
-                return RedirectToAction(nameof(Index));
+            {                
+                Election election = _mapper.Map<ElectionCreateViewModel, Election>(electionViewModel);
+                Election result = await _electionService.InsertElection(election, electionViewModel.ElectionCadidate, electionViewModel.ElectionCitizen, 
+                    electionViewModel.ElectionPosition,electionViewModel.ElectionPoliticParty);
+                if (result!=null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                ModelState.AddModelError("", "Ocurrion un erro al insertar la eleccion.");
             }
-            return View(election);
+            return View(electionViewModel);
         }
 
         // GET: Elections/Edit/5

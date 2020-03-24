@@ -25,7 +25,7 @@ namespace Sistema_de_votacion.Controllers
         // GET: Citizens
         public async Task<IActionResult> Index()
         {
-            var citizens = await _citizenServices.GetCitizenByCondition(c => c.IsActive == true );
+            var citizens = await _citizenServices.GetCitizenByConditionAsync(c => c.IsActive == true );
             return View( citizens.ToList().OrderBy(c => new { c.Name, c.LastName }));
         }
         [HttpPost]
@@ -34,11 +34,11 @@ namespace Sistema_de_votacion.Controllers
             IQueryable<Citizen> citizens;
 
             if (activeParam == "on") {
-                citizens = await _citizenServices.GetCitizenByCondition(c => c.IsActive == true);
+                citizens = await _citizenServices.GetCitizenByConditionAsync(c => c.IsActive == true);
             }
             else
             {
-                citizens = await _citizenServices.GetCitizenByCondition(c => c.IsActive == false);
+                citizens = await _citizenServices.GetCitizenByConditionAsync(c => c.IsActive == false);
             }            
 
             return View(citizens.ToList());
@@ -52,7 +52,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var citizen = await _citizenServices.GetCitizenById(id);
+            var citizen = await _citizenServices.GetCitizenByIdAsync(id);
                 
             if (citizen == null)
             {
@@ -78,7 +78,7 @@ namespace Sistema_de_votacion.Controllers
             if (ModelState.IsValid)
             {
                 citizen.IsActive = true;
-                 var newCitizen = await _citizenServices.InsertCitizen(citizen);
+                 var newCitizen = await _citizenServices.InsertCitizenAsync(citizen);
                 if (newCitizen != null)
                 {
                     return RedirectToAction(nameof(Index));
@@ -96,7 +96,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var citizen = await _citizenServices.GetCitizenById(id);
+            var citizen = await _citizenServices.GetCitizenByIdAsync(id);
             if (citizen == null)
             {
                 return NotFound();
@@ -120,7 +120,7 @@ namespace Sistema_de_votacion.Controllers
             {
                 try
                 {
-                    await _citizenServices.UdateCitizen(citizen);
+                    await _citizenServices.UdateCitizenAsync(citizen);
                    
                 }
                 catch (DbUpdateConcurrencyException)
@@ -147,7 +147,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var citizen = await _citizenServices.GetCitizenById(id);
+            var citizen = await _citizenServices.GetCitizenByIdAsync(id);
                 
             if (citizen == null)
             {
@@ -162,10 +162,10 @@ namespace Sistema_de_votacion.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var citizen = await _citizenServices.GetCitizenById(id);
+            var citizen = await _citizenServices.GetCitizenByIdAsync(id);
             if (citizen != null)
             {
-                await _citizenServices.DeleteCitizen(citizen);
+                await _citizenServices.DeleteCitizenAsync(citizen);
             }          
           
             return RedirectToAction(nameof(Index));
@@ -173,7 +173,7 @@ namespace Sistema_de_votacion.Controllers
 
         private bool CitizenExists(int id)
         {
-            var citizen = _citizenServices.GetCitizenById(id);
+            var citizen = _citizenServices.GetCitizenByIdAsync(id);
             if (citizen != null)
                 return true;
             return false;
