@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -40,10 +41,9 @@ namespace Sistema_de_votacion.Controllers
         // GET: Elections
         public async Task<IActionResult> Index()
         {
-            var result = await _electionService.GetElections();
-            return View(result.ToList());
+            return View();
         }
-
+        [Authorize]
         // GET: Elections/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -62,6 +62,7 @@ namespace Sistema_de_votacion.Controllers
             return View(election);
         }
 
+        [Authorize]
         // GET: Elections/Create
         public async Task<IActionResult> Create()
         {
@@ -73,7 +74,7 @@ namespace Sistema_de_votacion.Controllers
             ViewBag.PoliticParties = new MultiSelectList(_politicPartyService.GetPoliticParties().Where(pp => pp.IsActive == true), "Id", "Name");
             return View();
         }
-
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create( ElectionCreateViewModel electionViewModel)
@@ -91,7 +92,7 @@ namespace Sistema_de_votacion.Controllers
             }
             return View(electionViewModel);
         }
-
+        [Authorize]
         // GET: Elections/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -107,7 +108,7 @@ namespace Sistema_de_votacion.Controllers
             }
             return View(election);
         }
-
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Date,IsActive")] Election election)
@@ -138,7 +139,7 @@ namespace Sistema_de_votacion.Controllers
             }
             return View(election);
         }
-
+        [Authorize]
         // GET: Elections/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -155,7 +156,7 @@ namespace Sistema_de_votacion.Controllers
 
             return View(election);
         }
-
+        [Authorize]
         // POST: Elections/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
