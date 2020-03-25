@@ -15,5 +15,6 @@ namespace Sistema_de_votacion.Services.Elections
         Task<Election> GetElectionById(int? id);
         Task<Election> UpdateElection(Election election);
         Task<Election> DeleteElection(Election election);
+        Task<bool> VerifyCitizenVote(int CitizenId);
     }
 }

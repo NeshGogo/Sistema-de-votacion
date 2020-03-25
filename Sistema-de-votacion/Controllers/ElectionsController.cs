@@ -43,6 +43,42 @@ namespace Sistema_de_votacion.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> Index(VotationLoginViewModel votationLoginViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                
+                Citizen citizen = (await  _citizenService.GetCitizenByConditionAsync(c => c.Dni == votationLoginViewModel.DNI && c.IsActive == true)).FirstOrDefault();
+                if (citizen == null)
+                {
+                    ViewBag.Message = "EL ciudadano no existe o esta inactivo.";
+                    return View(votationLoginViewModel);
+                }
+                Election election = (await _electionService.GetElections()).FirstOrDefault(e => e.IsActive == true);
+                if (election == null)
+                {
+                    ViewBag.Message = "No hay ningun proceso electoral en estos momentos.";
+                    return View(votationLoginViewModel);
+                }
+                if ( await _electionService.VerifyCitizenVote(citizen.Id))
+                {
+                    ViewBag.Message = "Usted ya ejercion su derecho al voto.";
+                    return View(votationLoginViewModel);
+                }
+
+                return RedirectToAction("Votation");
+                
+            }
+
+
+            return View(votationLoginViewModel);
+        }
+        public async Task<IActionResult> Votation()
+        {
+            return View();
+        }
+
         [Authorize]
         // GET: Elections/Details/5
         public async Task<IActionResult> Details(int? id)
