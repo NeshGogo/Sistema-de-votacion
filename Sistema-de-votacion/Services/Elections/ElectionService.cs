@@ -77,5 +77,10 @@ namespace Sistema_de_votacion.Services.Elections
            return await Task.FromResult( _electionCitizenRepository.GetAll().Any(ec => ec.CitizenId == citizenId) );       
             
         }
+
+        public async Task<bool> VerifyElectionOpen()
+        { 
+            return await Task.FromResult(_electionRepository.GetAll().Any(e => e.IsActive == true));
+        }
     }
 }

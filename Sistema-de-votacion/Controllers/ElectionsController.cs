@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Sistema_de_votacion.Data;
 using Sistema_de_votacion.Models;
 using Sistema_de_votacion.Services.Candidates;
 using Sistema_de_votacion.Services.Candidates.Positions;
@@ -39,7 +38,7 @@ namespace Sistema_de_votacion.Controllers
         }
 
         // GET: Elections
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }
@@ -55,8 +54,8 @@ namespace Sistema_de_votacion.Controllers
                     ViewBag.Message = "EL ciudadano no existe o esta inactivo.";
                     return View(votationLoginViewModel);
                 }
-                Election election = (await _electionService.GetElections()).FirstOrDefault(e => e.IsActive == true);
-                if (election == null)
+                ;
+                if (await _electionService.VerifyElectionOpen() == false)
                 {
                     ViewBag.Message = "No hay ningun proceso electoral en estos momentos.";
                     return View(votationLoginViewModel);
@@ -67,14 +66,14 @@ namespace Sistema_de_votacion.Controllers
                     return View(votationLoginViewModel);
                 }
 
-                return RedirectToAction("Votation");
+                return RedirectToAction("Votation",citizen);
                 
             }
 
 
             return View(votationLoginViewModel);
         }
-        public async Task<IActionResult> Votation()
+        public async Task<IActionResult> Votation(Citizen citizen)
         {
             return View();
         }
