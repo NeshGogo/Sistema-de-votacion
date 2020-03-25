@@ -25,6 +25,8 @@ namespace Sistema_de_votacion.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginDTO login)
         {
+            //var user = new IdentityUser { Email = "jrosario19@hotmail.com", UserName = "admin" };
+            //var result1 = await _userManager.CreateAsync(user, "admin");
             if (ModelState.IsValid)
             {
                var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Password, false, false);
