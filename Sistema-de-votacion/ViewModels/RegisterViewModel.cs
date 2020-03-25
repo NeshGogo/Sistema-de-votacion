@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Sistema_de_votacion.DTO
+namespace Sistema_de_votacion.ViewModels
 {
-    public class RegisterDTO
+    public class RegisterViewModel
     {
         [Display(Name = "Nombre de usuario")]
         [Required(ErrorMessage = "Este campo es requerido.")]

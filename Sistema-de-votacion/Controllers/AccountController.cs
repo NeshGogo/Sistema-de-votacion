@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Sistema_de_votacion.DTO;
+using Sistema_de_votacion.ViewModels;
 
 namespace Sistema_de_votacion.Controllers
 {
@@ -23,7 +23,7 @@ namespace Sistema_de_votacion.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Login(LoginDTO login)
+        public async Task<IActionResult> Login(LoginViewModel login)
         {
             if (ModelState.IsValid)
             {
@@ -39,7 +39,7 @@ namespace Sistema_de_votacion.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterDTO register)
+        public async Task<IActionResult> Register(RegisterViewModel register)
         {
             if (ModelState.IsValid)
             {
