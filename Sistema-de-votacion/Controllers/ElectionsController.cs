@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Sistema_de_votacion.Data;
 using Sistema_de_votacion.Models;
 using Sistema_de_votacion.Services.Candidates;
 using Sistema_de_votacion.Services.Candidates.Positions;
@@ -39,10 +38,46 @@ namespace Sistema_de_votacion.Controllers
         }
 
         // GET: Elections
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> Index(VotationLoginViewModel votationLoginViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                
+                Citizen citizen = (await  _citizenService.GetCitizenByConditionAsync(c => c.Dni == votationLoginViewModel.DNI && c.IsActive == true)).FirstOrDefault();
+                if (citizen == null)
+                {
+                    ViewBag.Message = "EL ciudadano no existe o esta inactivo.";
+                    return View(votationLoginViewModel);
+                }
+                ;
+                if (await _electionService.VerifyElectionOpen() == false)
+                {
+                    ViewBag.Message = "No hay ningun proceso electoral en estos momentos.";
+                    return View(votationLoginViewModel);
+                }
+                if ( await _electionService.VerifyCitizenVote(citizen.Id))
+                {
+                    ViewBag.Message = "Usted ya ejercion su derecho al voto.";
+                    return View(votationLoginViewModel);
+                }
+
+                return RedirectToAction("Votation",citizen);
+                
+            }
+
+
+            return View(votationLoginViewModel);
+        }
+        public async Task<IActionResult> Votation(Citizen citizen)
+        {
+            return View();
+        }
+
         [Authorize]
         // GET: Elections/Details/5
         public async Task<IActionResult> Details(int? id)
