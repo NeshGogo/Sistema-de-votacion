@@ -31,23 +31,23 @@ namespace Sistema_de_votacion.Services.Elections
             _electionPoliticPartyRepository = electionPoliticPartyRepository;
             _electionPositionRepository = electionPositionRepository;
         }
-        public async Task<Election> DeleteElection(Election election)
+        public async Task<Election> DeleteElectionAsync(Election election)
         {
             election.IsActive = false;
             return await Task.FromResult(_electionRepository.Update(election));
         }
 
-        public async  Task<Election> GetElectionById(int? id)
+        public async  Task<Election> GetElectionByIdAsync(int? id)
         {
             return await Task.FromResult(_electionRepository.GetById(id.Value));
         }
 
-        public async  Task<IQueryable<Election>> GetElections()
+        public async  Task<IQueryable<Election>> GetElectionsAsync()
         {
             return await Task.FromResult(_electionRepository.GetAll());
         }
 
-        public async Task<Election> InsertElection(Election election, List<int> electionCandidates, List<int> electionCitizens, List<int> electionPositions, List<int> electionPoliticParties)
+        public async Task<Election> InsertElectionAsync(Election election, List<int> electionCandidates, List<int> electionCitizens, List<int> electionPositions, List<int> electionPoliticParties)
         {
             election.Date = DateTime.UtcNow;
             election.IsActive = true;
@@ -67,18 +67,18 @@ namespace Sistema_de_votacion.Services.Elections
             return result;
         }
 
-        public async Task<Election> UpdateElection(Election election)
+        public async Task<Election> UpdateElectionAsync(Election election)
         {
             return await Task.FromResult(_electionRepository.Update(election));
         }
 
-        public async Task<bool> VerifyCitizenVote(int citizenId)
+        public async Task<bool> VerifyCitizenVoteAsync(int citizenId)
         {
            return await Task.FromResult( _electionCitizenRepository.GetAll().Any(ec => ec.CitizenId == citizenId) );       
             
         }
 
-        public async Task<bool> VerifyElectionOpen()
+        public async Task<bool> VerifyElectionOpenAsync()
         { 
             return await Task.FromResult(_electionRepository.GetAll().Any(e => e.IsActive == true));
         }

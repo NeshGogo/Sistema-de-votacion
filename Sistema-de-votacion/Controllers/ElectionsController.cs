@@ -58,12 +58,12 @@ namespace Sistema_de_votacion.Controllers
                     return View(votationLoginViewModel);
                 }
                 ;
-                if (await _electionService.VerifyElectionOpen() == false)
+                if (await _electionService.VerifyElectionOpenAsync() == false)
                 {
                     ViewBag.Message = "No hay ningun proceso electoral en estos momentos.";
                     return View(votationLoginViewModel);
                 }
-                if ( await _electionService.VerifyCitizenVote(citizen.Id))
+                if ( await _electionService.VerifyCitizenVoteAsync(citizen.Id))
                 {
                     ViewBag.Message = "Usted ya ejercion su derecho al voto.";
                     return View(votationLoginViewModel);
@@ -90,7 +90,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var election = await _electionService.GetElectionById(id);
+            var election = await _electionService.GetElectionByIdAsync(id);
 
             if (election == null)
             {
@@ -107,7 +107,7 @@ namespace Sistema_de_votacion.Controllers
             var candidates = _candidateService.GetCandidates().Where(c => c.IsActive == true).Select(c => new { c.Id, Name = $"{c.Name} {c.Name}" });
             var citizens = (await _citizenService.GetCitizenByConditionAsync(c => c.IsActive == true)).Select(c => new { c.Id, Name = $"{c.Name}  {c.LastName}" });
             ViewBag.Citizens = new MultiSelectList(citizens, "Id", "Name");
-            ViewBag.Positions = new MultiSelectList( (await _positionService.GetPositions()).Where(p => p.IsActive == true), "Id", "Name");
+            ViewBag.Positions = new MultiSelectList( (await _positionService.GetPositionsAsync()).Where(p => p.IsActive == true), "Id", "Name");
             ViewBag.Candidates = new MultiSelectList(candidates, "Id", "Name");
             ViewBag.PoliticParties = new MultiSelectList(_politicPartyService.GetPoliticParties().Where(pp => pp.IsActive == true), "Id", "Name");
             return View();
@@ -120,7 +120,7 @@ namespace Sistema_de_votacion.Controllers
             if (ModelState.IsValid)
             {                
                 Election election = _mapper.Map<ElectionCreateViewModel, Election>(electionViewModel);
-                Election result = await _electionService.InsertElection(election, electionViewModel.ElectionCadidate, electionViewModel.ElectionCitizen, 
+                Election result = await _electionService.InsertElectionAsync(election, electionViewModel.ElectionCadidate, electionViewModel.ElectionCitizen, 
                     electionViewModel.ElectionPosition,electionViewModel.ElectionPoliticParty);
                 if (result!=null)
                 {
@@ -139,7 +139,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var election = await _electionService.GetElectionById(id);
+            var election = await _electionService.GetElectionByIdAsync(id);
             if (election == null)
             {
                 return NotFound();
@@ -160,7 +160,7 @@ namespace Sistema_de_votacion.Controllers
             {
                 try
                 {
-                    await _electionService.UpdateElection(election);
+                    await _electionService.UpdateElectionAsync(election);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -186,7 +186,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var election = await _electionService.GetElectionById(id);
+            var election = await _electionService.GetElectionByIdAsync(id);
             if (election == null)
             {
                 return NotFound();
@@ -200,15 +200,15 @@ namespace Sistema_de_votacion.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var election = await _electionService.GetElectionById(id);
-            await _electionService.DeleteElection(election);
+            var election = await _electionService.GetElectionByIdAsync(id);
+            await _electionService.DeleteElectionAsync(election);
      
             return RedirectToAction(nameof(Index));
         }
 
         private async Task<bool> ElectionExists(int id)
         {
-            var result = await _electionService.GetElections();
+            var result = await _electionService.GetElectionsAsync();
             return result.Any(e => e.Id == id);
         }
     }

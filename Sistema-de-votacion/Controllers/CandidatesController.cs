@@ -66,7 +66,7 @@ namespace Sistema_de_votacion.Controllers
         {
 
             ViewData["PoliticPartyId"] = new SelectList(_politicPartyService.GetPoliticParties(), "Id", "Description");
-            ViewData["PositionId"] = new SelectList(await _positionService.GetPositions(), "Id", "Description");
+            ViewData["PositionId"] = new SelectList(await _positionService.GetPositionsAsync(), "Id", "Description");
             return View();
         }
 
@@ -95,7 +95,7 @@ namespace Sistema_de_votacion.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["PoliticPartyId"] = new SelectList(_politicPartyService.GetPoliticParties(), "Id", "Description", model.PoliticPartyId);
-            ViewData["PositionId"] = new SelectList(await _positionService.GetPositions(), "Id", "Description", model.PositionId);
+            ViewData["PositionId"] = new SelectList(await _positionService.GetPositionsAsync(), "Id", "Description", model.PositionId);
             return View(model);
         }
 
@@ -124,7 +124,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
             ViewData["PoliticPartyId"] = new SelectList(_politicPartyService.GetPoliticParties(), "Id", "Description", candidate.PoliticPartyId);
-            ViewData["PositionId"] = new SelectList(await _positionService.GetPositions(), "Id", "Description", candidate.PositionId);
+            ViewData["PositionId"] = new SelectList(await _positionService.GetPositionsAsync(), "Id", "Description", candidate.PositionId);
             return View(candidateViewModel);
         }
 
@@ -177,7 +177,7 @@ namespace Sistema_de_votacion.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["PoliticPartyId"] = new SelectList(_politicPartyService.GetPoliticParties(), "Id", "Description", model.PoliticPartyId);
-            ViewData["PositionId"] = new SelectList(await _positionService.GetPositions(), "Id", "Description", model.PositionId);
+            ViewData["PositionId"] = new SelectList(await _positionService.GetPositionsAsync(), "Id", "Description", model.PositionId);
             return View(model);
         }
 

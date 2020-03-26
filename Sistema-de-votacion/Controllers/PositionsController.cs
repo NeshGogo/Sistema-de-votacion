@@ -28,13 +28,25 @@ namespace Sistema_de_votacion.Controllers
         // GET: Positions
         public async Task<IActionResult> Index()
         {
-            return View((await _positionService.GetPositions()).Where(p => p.IsActive == true).ToListAsync());
+            return View(await _positionService.GetPositionsByConditionAsync(p => p.IsActive == true));
+        }
+        [HttpPost]
+        public async Task<IActionResult> Index(string activeParam)
+        {
+            IEnumerable<Position> positions;
+
+            if (activeParam == "on")            
+                positions = await _positionService.GetPositionsByConditionAsync(c => c.IsActive == true);            
+            else            
+                positions = await _positionService.GetPositionsByConditionAsync(c => c.IsActive == false);            
+
+            return View(positions.ToList());
         }
 
         // GET: Positions/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (await _electionService.VerifyElectionOpen())
+            if (await _electionService.VerifyElectionOpenAsync())
             {
                 ViewBag.Message="No es posible Modificar ninguna posicion politica porque actualmente existe una eleccion abierta.";
                 return RedirectToAction("Index");
@@ -44,7 +56,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var position = await _positionService.GetPositionById(id.Value);
+            var position = await _positionService.GetPositionByIdAsync(id.Value);
                 
             if (position == null)
             {
@@ -57,7 +69,7 @@ namespace Sistema_de_votacion.Controllers
         // GET: Positions/Create
         public async Task<IActionResult> Create()
         {
-            if (await _electionService.VerifyElectionOpen())
+            if (await _electionService.VerifyElectionOpenAsync())
             {
                 ViewBag.Message = "No es posible crear o añadir ninguna posicion politica porque actualmente existe una eleccion abierta.";
                 return RedirectToAction("Index");
@@ -72,7 +84,7 @@ namespace Sistema_de_votacion.Controllers
             if (ModelState.IsValid)
             {
                 position.IsActive = true;
-                await  _positionService.InsertPosition(position);
+                await  _positionService.InsertPositionAsync(position);
                
                 return RedirectToAction(nameof(Index));
             }
@@ -87,7 +99,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var position = await _positionService.GetPositionById(id.Value);
+            var position = await _positionService.GetPositionByIdAsync(id.Value);
             if (position == null)
             {
                 return NotFound();
@@ -108,7 +120,7 @@ namespace Sistema_de_votacion.Controllers
             {
                 try
                 {                    
-                    await _positionService.UdatePosition(position);
+                    await _positionService.UdatePositionAsync(position);
                     
                 }
                 catch (DbUpdateConcurrencyException)
@@ -130,7 +142,7 @@ namespace Sistema_de_votacion.Controllers
         // GET: Positions/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (await _electionService.VerifyElectionOpen())
+            if (await _electionService.VerifyElectionOpenAsync())
             {
                 ViewBag.Message = "No es posible Eliminar ninguna posicion politica porque actualmente existe una eleccion abierta.";
                 return RedirectToAction("Index");
@@ -139,7 +151,7 @@ namespace Sistema_de_votacion.Controllers
             {
                 return NotFound();
             }
-            var position =  await _positionService.GetPositionById(id.Value);
+            var position =  await _positionService.GetPositionByIdAsync(id.Value);
             
                 
             if (position == null)
@@ -155,20 +167,20 @@ namespace Sistema_de_votacion.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (await _electionService.VerifyElectionOpen())
+            if (await _electionService.VerifyElectionOpenAsync())
             {
                 ViewBag.Message = "No es posible eliminar ninguna posicion politica porque actualmente existe una eleccion abierta.";
                 return RedirectToAction("Index");
             }
-            var position = await _positionService.GetPositionById(id);
-            await  _positionService.DeletePosition(position);
+            var position = await _positionService.GetPositionByIdAsync(id);
+            await  _positionService.DeletePositionAsync(position);
             
             return RedirectToAction(nameof(Index));
         }
 
         private async  Task<bool> PositionExists(int id)
         {
-            return (await _positionService.GetPositions()).Any(e => e.Id == id);
+            return (await _positionService.GetPositionsAsync()).Any(e => e.Id == id);
         }
     }
 }

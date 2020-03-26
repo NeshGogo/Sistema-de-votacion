@@ -11,9 +11,19 @@
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
-<p>
-    <a class="btn btn-outline-success" asp-action="Create">Añadir nuevo</a>
-</p>
+<div class="d-flex justify-content-between mt-4">
+    <p>
+        <a class="btn btn-outline-success" asp-action="Create">Añadir nuevo</a>
+    </p>
+    <form asp-action="Index" method="post" class="form">
+        <label class="form-check form-check-inline">
+            <input name="activeParam" type="checkbox" class="form-control-sm" />
+            <span> Activos &nbsp;&nbsp;</span>
+            <input class="btn btn-sm btn-outline-info" type="submit" value="Buscar" />
+        </label>
+    </form>
+</div>
+
 <table class="table table-striped table-hover table-bordered text-center">
     <thead class="thead-dark">
         <tr>
