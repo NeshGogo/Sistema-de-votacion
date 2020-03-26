@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Sistema_de_votacion.Data.Positions;
 using Sistema_de_votacion.Models;
@@ -15,28 +16,32 @@ namespace Sistema_de_votacion.Services.Candidates.Positions
         {
             this._positionRepository = positionRepository;
         }
-        public Position InsertPosition(Position position)
+        public async Task<Position> InsertPositionAsync(Position position)
         {
-            return _positionRepository.Insert(position);
+            return await Task.FromResult(_positionRepository.Insert(position));
         }
-        public Position GetPositionById(int Id)
+        public async Task<Position> GetPositionByIdAsync(int Id)
         {
-            return _positionRepository.GetById(Id);
+            return await Task.FromResult(_positionRepository.GetById(Id));
         }
 
-        public IQueryable<Position> GetPositions()
+        public async Task<IQueryable<Position>> GetPositionsAsync()
         {
-            return _positionRepository.GetAll();
+            return await Task.FromResult(_positionRepository.GetAll());
         }
-        public Position UdatePosition(Position position)
+        public async Task<Position> UdatePositionAsync(Position position)
         {
-            return _positionRepository.Update(position);
+            return await Task.FromResult( _positionRepository.Update(position));
         }
-        public Position DeletePosition(Position position)
+        public async Task<Position> DeletePositionAsync(Position position)
         {
             position.IsActive = false;
-            return _positionRepository.Update(position);
+            return await Task.FromResult( _positionRepository.Update(position));
         }
 
+        public async  Task<IEnumerable<Position>> GetPositionsByConditionAsync(Expression<Func<Position, bool>> predicate)
+        {
+            return await Task.FromResult(_positionRepository.GetAll().Where(predicate));
+        }
     }
 }

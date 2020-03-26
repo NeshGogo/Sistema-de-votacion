@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Sistema_de_votacion.Data;
 using Sistema_de_votacion.Models;
 using Sistema_de_votacion.Services.Candidates.Positions;
+using Sistema_de_votacion.Services.Elections;
 
 namespace Sistema_de_votacion.Controllers
 {
@@ -16,27 +17,46 @@ namespace Sistema_de_votacion.Controllers
     public class PositionsController : Controller
     {
         private readonly IPositionService _positionService;
+        private readonly IElectionService _electionService;
 
-        public PositionsController(IPositionService positionService)
+        public PositionsController(IPositionService positionService, IElectionService electionService)
         {
             _positionService = positionService;
+            _electionService = electionService;
         }
 
         // GET: Positions
         public async Task<IActionResult> Index()
         {
-            return View(await _positionService.GetPositions().Where(p => p.IsActive == true).ToListAsync());
+            return View(await _positionService.GetPositionsByConditionAsync(p => p.IsActive == true));
+        }
+        [HttpPost]
+        public async Task<IActionResult> Index(string activeParam)
+        {
+            IEnumerable<Position> positions;
+
+            if (activeParam == "on")            
+                positions = await _positionService.GetPositionsByConditionAsync(c => c.IsActive == true);            
+            else            
+                positions = await _positionService.GetPositionsByConditionAsync(c => c.IsActive == false);            
+
+            return View(positions.ToList());
         }
 
         // GET: Positions/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            if (await _electionService.VerifyElectionOpenAsync())
+            {
+                ViewBag.Message="No es posible Modificar ninguna posicion politica porque actualmente existe una eleccion abierta.";
+                return RedirectToAction("Index");
+            }
             if (id == null)
             {
                 return NotFound();
             }
 
-            var position = await Task.FromResult(_positionService.GetPositionById(id.Value));
+            var position = await _positionService.GetPositionByIdAsync(id.Value);
                 
             if (position == null)
             {
@@ -47,8 +67,13 @@ namespace Sistema_de_votacion.Controllers
         }
 
         // GET: Positions/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            if (await _electionService.VerifyElectionOpenAsync())
+            {
+                ViewBag.Message = "No es posible crear o añadir ninguna posicion politica porque actualmente existe una eleccion abierta.";
+                return RedirectToAction("Index");
+            }
             return View("Form");
         }
 
@@ -59,7 +84,7 @@ namespace Sistema_de_votacion.Controllers
             if (ModelState.IsValid)
             {
                 position.IsActive = true;
-                await  Task.FromResult(_positionService.InsertPosition(position));
+                await  _positionService.InsertPositionAsync(position);
                
                 return RedirectToAction(nameof(Index));
             }
@@ -74,7 +99,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var position = await Task.FromResult(_positionService.GetPositionById(id.Value));
+            var position = await _positionService.GetPositionByIdAsync(id.Value);
             if (position == null)
             {
                 return NotFound();
@@ -95,12 +120,12 @@ namespace Sistema_de_votacion.Controllers
             {
                 try
                 {                    
-                    await Task.FromResult(_positionService.UdatePosition(position));
+                    await _positionService.UdatePositionAsync(position);
                     
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PositionExists(position.Id))
+                    if (!await PositionExists(position.Id))
                     {
                         return NotFound();
                     }
@@ -117,11 +142,16 @@ namespace Sistema_de_votacion.Controllers
         // GET: Positions/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            if (await _electionService.VerifyElectionOpenAsync())
+            {
+                ViewBag.Message = "No es posible Eliminar ninguna posicion politica porque actualmente existe una eleccion abierta.";
+                return RedirectToAction("Index");
+            }
             if (id == null)
             {
                 return NotFound();
             }
-            var position =  await Task.FromResult( _positionService.GetPositionById(id.Value) );
+            var position =  await _positionService.GetPositionByIdAsync(id.Value);
             
                 
             if (position == null)
@@ -137,15 +167,20 @@ namespace Sistema_de_votacion.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var position = _positionService.GetPositionById(id);
-            await Task.FromResult( _positionService.DeletePosition(position));
+            if (await _electionService.VerifyElectionOpenAsync())
+            {
+                ViewBag.Message = "No es posible eliminar ninguna posicion politica porque actualmente existe una eleccion abierta.";
+                return RedirectToAction("Index");
+            }
+            var position = await _positionService.GetPositionByIdAsync(id);
+            await  _positionService.DeletePositionAsync(position);
             
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PositionExists(int id)
+        private async  Task<bool> PositionExists(int id)
         {
-            return _positionService.GetPositions().Any(e => e.Id == id);
+            return (await _positionService.GetPositionsAsync()).Any(e => e.Id == id);
         }
     }
 }

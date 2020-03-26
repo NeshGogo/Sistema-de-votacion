@@ -9,13 +9,12 @@ namespace Sistema_de_votacion.Services.Elections
 {
     public interface IElectionService
     {
-        Task<Election> InsertElection(Election election, List<int> ElectionCandidates, 
-            List<int> ElectionCitizens, List<int> ElectionPositions, List<int> ElectionPoliticParties);
-        Task<IQueryable<Election>> GetElections();
-        Task<Election> GetElectionById(int? id);
-        Task<Election> UpdateElection(Election election);
-        Task<Election> DeleteElection(Election election);
-        Task<bool> VerifyCitizenVote(int CitizenId);
-        Task<bool> VerifyElectionOpen();
+        Task<Election> InsertElectionAsync(Election election, List<int> ElectionCandidates, List<int> ElectionPositions);
+        Task<IQueryable<Election>> GetElectionsAsync();
+        Task<Election> GetElectionByIdAsync(int? id);
+        Task<Election> UpdateElectionAsync(Election election);
+        Task<Election> DeleteElectionAsync(Election election);
+        Task<bool> VerifyCitizenVoteAsync(int CitizenId);
+        Task<bool> VerifyElectionOpenAsync();
     }
 }

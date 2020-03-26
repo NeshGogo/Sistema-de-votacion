@@ -23,36 +23,21 @@
                 </div>
                 <div class="form-group">
                     <div>
-                        <label asp-for="ElectionCadidate" class="control-label"></label>
-                    </div>
-                    <select class="form-control" asp-for="ElectionCadidate" asp-items="ViewBag.Candidates" multiple></select>
-                    <span asp-validation-for="ElectionCadidate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <div>
                         <label asp-for="ElectionPosition" class="control-label"></label>
                     </div>
                     <select class="form-control" asp-for="ElectionPosition" asp-items="ViewBag.Positions" multiple></select>
                     <span asp-validation-for="ElectionPosition" class="text-danger"></span>
                 </div>
+                <div class="form-group">
+                    <div>
+                        <label asp-for="ElectionCadidate" class="control-label"></label>
+                    </div>
+                    <select class="form-control" asp-for="ElectionCadidate" asp-items="ViewBag.Candidates" multiple></select>
+                    <span asp-validation-for="ElectionCadidate" class="text-danger"></span>
+                </div>
+
             </div>
 
-            <div class=" col-md-4" style="margin-top:86px;">
-                <div class="form-group">
-                    <div>
-                        <label asp-for="ElectionPoliticParty" class="control-label"></label>
-                    </div>
-                    <select class="form-control" asp-for="ElectionPoliticParty" asp-items="ViewBag.PoliticParies" multiple></select>
-                    <span asp-validation-for="ElectionPoliticParty" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <div>
-                        <label asp-for="ElectionCitizen" class="control-label"></label>
-                    </div>
-                    <select class="form-control" asp-for="ElectionCitizen" asp-items="ViewBag.Citizens" multiple></select>
-                    <span asp-validation-for="ElectionCitizen" class="text-danger"></span>
-                </div>
-            </div>
         </div>
         <div class="form-group text-center">
             <input type="submit" value="Crear" class="btn btn-primary" /> 
