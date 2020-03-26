@@ -25,7 +25,7 @@ namespace Sistema_de_votacion.Controllers
         // GET: Positions
         public async Task<IActionResult> Index()
         {
-            return View(await _positionService.GetPositions().Where(p => p.IsActive == true).ToListAsync());
+            return View((await _positionService.GetPositions()).Where(p => p.IsActive == true).ToListAsync());
         }
 
         // GET: Positions/Details/5
@@ -36,7 +36,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var position = await Task.FromResult(_positionService.GetPositionById(id.Value));
+            var position = await _positionService.GetPositionById(id.Value);
                 
             if (position == null)
             {
@@ -59,7 +59,7 @@ namespace Sistema_de_votacion.Controllers
             if (ModelState.IsValid)
             {
                 position.IsActive = true;
-                await  Task.FromResult(_positionService.InsertPosition(position));
+                await  _positionService.InsertPosition(position);
                
                 return RedirectToAction(nameof(Index));
             }
@@ -74,7 +74,7 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var position = await Task.FromResult(_positionService.GetPositionById(id.Value));
+            var position = await _positionService.GetPositionById(id.Value);
             if (position == null)
             {
                 return NotFound();
@@ -95,12 +95,12 @@ namespace Sistema_de_votacion.Controllers
             {
                 try
                 {                    
-                    await Task.FromResult(_positionService.UdatePosition(position));
+                    await _positionService.UdatePosition(position);
                     
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PositionExists(position.Id))
+                    if (!await PositionExists(position.Id))
                     {
                         return NotFound();
                     }
@@ -121,7 +121,7 @@ namespace Sistema_de_votacion.Controllers
             {
                 return NotFound();
             }
-            var position =  await Task.FromResult( _positionService.GetPositionById(id.Value) );
+            var position =  await _positionService.GetPositionById(id.Value);
             
                 
             if (position == null)
@@ -137,15 +137,15 @@ namespace Sistema_de_votacion.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var position = _positionService.GetPositionById(id);
-            await Task.FromResult( _positionService.DeletePosition(position));
+            var position = await _positionService.GetPositionById(id);
+            await  _positionService.DeletePosition(position);
             
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PositionExists(int id)
+        private async  Task<bool> PositionExists(int id)
         {
-            return _positionService.GetPositions().Any(e => e.Id == id);
+            return (await _positionService.GetPositions()).Any(e => e.Id == id);
         }
     }
 }

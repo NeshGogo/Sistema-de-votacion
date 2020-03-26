@@ -40,6 +40,9 @@ namespace Sistema_de_votacion.Controllers
         // GET: Elections
         public IActionResult Index()
         {
+            if (User.Identity.Name != null)
+                return RedirectToAction("Index", "AdminitrationHome");
+
             return View();
         }
         [HttpPost]
@@ -104,7 +107,7 @@ namespace Sistema_de_votacion.Controllers
             var candidates = _candidateService.GetCandidates().Where(c => c.IsActive == true).Select(c => new { c.Id, Name = $"{c.Name} {c.Name}" });
             var citizens = (await _citizenService.GetCitizenByConditionAsync(c => c.IsActive == true)).Select(c => new { c.Id, Name = $"{c.Name}  {c.LastName}" });
             ViewBag.Citizens = new MultiSelectList(citizens, "Id", "Name");
-            ViewBag.Positions = new MultiSelectList( _positionService.GetPositions().Where(p => p.IsActive == true), "Id", "Name");
+            ViewBag.Positions = new MultiSelectList( (await _positionService.GetPositions()).Where(p => p.IsActive == true), "Id", "Name");
             ViewBag.Candidates = new MultiSelectList(candidates, "Id", "Name");
             ViewBag.PoliticParties = new MultiSelectList(_politicPartyService.GetPoliticParties().Where(pp => pp.IsActive == true), "Id", "Name");
             return View();

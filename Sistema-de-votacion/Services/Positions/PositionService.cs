@@ -15,27 +15,27 @@ namespace Sistema_de_votacion.Services.Candidates.Positions
         {
             this._positionRepository = positionRepository;
         }
-        public Position InsertPosition(Position position)
+        public async Task<Position> InsertPosition(Position position)
         {
-            return _positionRepository.Insert(position);
+            return await Task.FromResult(_positionRepository.Insert(position));
         }
-        public Position GetPositionById(int Id)
+        public async Task<Position> GetPositionById(int Id)
         {
-            return _positionRepository.GetById(Id);
+            return await Task.FromResult(_positionRepository.GetById(Id));
         }
 
-        public IQueryable<Position> GetPositions()
+        public async Task<IQueryable<Position>> GetPositions()
         {
-            return _positionRepository.GetAll();
+            return await Task.FromResult(_positionRepository.GetAll());
         }
-        public Position UdatePosition(Position position)
+        public async Task<Position> UdatePosition(Position position)
         {
-            return _positionRepository.Update(position);
+            return await Task.FromResult( _positionRepository.Update(position));
         }
-        public Position DeletePosition(Position position)
+        public async Task<Position> DeletePosition(Position position)
         {
             position.IsActive = false;
-            return _positionRepository.Update(position);
+            return await Task.FromResult( _positionRepository.Update(position));
         }
 
     }

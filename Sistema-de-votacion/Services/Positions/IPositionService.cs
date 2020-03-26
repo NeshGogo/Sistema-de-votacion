@@ -8,11 +8,11 @@ namespace Sistema_de_votacion.Services.Candidates.Positions
 {
     public interface IPositionService
     {
-        Position InsertPosition(Position position);
-        IQueryable<Position> GetPositions();
+       Task<Position> InsertPosition(Position position);
+        Task<IQueryable<Position>> GetPositions();
 
-        Position GetPositionById(int Id);
-        Position UdatePosition(Position position);
-        Position DeletePosition(Position position);
+        Task<Position> GetPositionById(int Id);
+        Task<Position> UdatePosition(Position position);
+        Task<Position> DeletePosition(Position position);
     }
 }
