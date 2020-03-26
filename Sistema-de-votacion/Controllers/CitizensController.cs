@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Sistema_de_votacion.Data;
 using Sistema_de_votacion.Models;
 using Sistema_de_votacion.Services.Citizens;
+using Sistema_de_votacion.Services.Elections;
 
 namespace Sistema_de_votacion.Controllers
 {
@@ -16,10 +17,12 @@ namespace Sistema_de_votacion.Controllers
     public class CitizensController : Controller
     {
         private readonly ICitizenService _citizenServices;
+        private readonly IElectionService _electionService;
 
-        public CitizensController(ICitizenService citizenServices)
+        public CitizensController(ICitizenService citizenServices, IElectionService electionService)
         {
             _citizenServices = citizenServices;
+            _electionService = electionService;
         }
 
         // GET: Citizens
@@ -63,8 +66,13 @@ namespace Sistema_de_votacion.Controllers
         }
 
         // GET: Citizens/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            if (await _electionService.VerifyElectionOpen())
+            {
+                ViewBag.Message = "No es posible crear o añadir ningun ciudadano porque actualmente existe una eleccion abierta.";
+                return RedirectToAction("Index");
+            }
             return View("Form");
         }
 
@@ -91,6 +99,11 @@ namespace Sistema_de_votacion.Controllers
         // GET: Citizens/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (await _electionService.VerifyElectionOpen())
+            {
+                ViewBag.Message = "No es posible modificar ningun ciudadano porque actualmente existe una eleccion abierta.";
+                return RedirectToAction("Index");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -142,6 +155,11 @@ namespace Sistema_de_votacion.Controllers
         // GET: Citizens/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            if (await _electionService.VerifyElectionOpen())
+            {
+                ViewBag.Message = "No es posible eliminar ningun ciudadano porque actualmente existe una eleccion abierta.";
+                return RedirectToAction("Index");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -162,6 +180,11 @@ namespace Sistema_de_votacion.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (await _electionService.VerifyElectionOpen())
+            {
+                ViewBag.Message = "No es posible eliminar ningun ciudadano porque actualmente existe una eleccion abierta.";
+                return RedirectToAction("Index");
+            }
             var citizen = await _citizenServices.GetCitizenByIdAsync(id);
             if (citizen != null)
             {
