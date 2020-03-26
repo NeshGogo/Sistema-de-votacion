@@ -105,11 +105,8 @@ namespace Sistema_de_votacion.Controllers
         public async Task<IActionResult> Create()
         {
             var candidates = _candidateService.GetCandidates().Where(c => c.IsActive == true).Select(c => new { c.Id, Name = $"{c.Name} {c.Name}" });
-            var citizens = (await _citizenService.GetCitizenByConditionAsync(c => c.IsActive == true)).Select(c => new { c.Id, Name = $"{c.Name}  {c.LastName}" });
-            ViewBag.Citizens = new MultiSelectList(citizens, "Id", "Name");
             ViewBag.Positions = new MultiSelectList( (await _positionService.GetPositionsAsync()).Where(p => p.IsActive == true), "Id", "Name");
             ViewBag.Candidates = new MultiSelectList(candidates, "Id", "Name");
-            ViewBag.PoliticParties = new MultiSelectList(_politicPartyService.GetPoliticParties().Where(pp => pp.IsActive == true), "Id", "Name");
             return View();
         }
         [Authorize]
@@ -120,8 +117,8 @@ namespace Sistema_de_votacion.Controllers
             if (ModelState.IsValid)
             {                
                 Election election = _mapper.Map<ElectionCreateViewModel, Election>(electionViewModel);
-                Election result = await _electionService.InsertElectionAsync(election, electionViewModel.ElectionCadidate, electionViewModel.ElectionCitizen, 
-                    electionViewModel.ElectionPosition,electionViewModel.ElectionPoliticParty);
+                Election result = await _electionService.InsertElectionAsync(election, electionViewModel.ElectionCadidate, 
+                    electionViewModel.ElectionPosition);
                 if (result!=null)
                 {
                     return RedirectToAction(nameof(Index));
