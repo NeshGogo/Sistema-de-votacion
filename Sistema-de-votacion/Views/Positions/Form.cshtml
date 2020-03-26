@@ -25,7 +25,7 @@
             @if (Model != null)
             {
                 <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="IsActive"/>
+                <input type="hidden" asp-for="IsActive" />
             }
 
             <div class="form-group">
@@ -38,6 +38,12 @@
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+            @if (Model != null && Model.IsActive == false)
+            {
+                <label class="form-group form-check">
+                    <input asp-for="IsActive" class="form-check-input" /> @Html.DisplayNameFor(model => model.IsActive)
+                </label>
+            }
             <div class="form-group">
                 <input type="submit" value="@ViewBag.Title" class="btn btn-primary" />
             </div>
