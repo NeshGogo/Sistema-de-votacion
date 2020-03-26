@@ -1,0 +1,74 @@
+﻿@model IEnumerable<Sistema_de_votacion.Models.Election>
+@{
+    ViewData["Title"] = "ElectionsList";
+    string EleccionActiva = (Model.FirstOrDefault(e => e.IsActive == true) != null) ? "disabled not-allowed" : "";    
+}
+
+<h1 class="display-4 text-center">Listado de Elecciones.</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-success pointer-event @EleccionActiva">Añadir nuevo</a>
+</p>
+@if (Model.Count() == 0)
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <strong>Advertencia!</strong> No existe ninguna eleccion registrada.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+@if (@ViewBag.Message != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Advertencia!</strong> @ViewBag.Message
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<table class="table table-striped table-hover table-bordered text-center">
+    <thead class="thead-dark">
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+
+            <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsActive)
+                </td>
+                <td class="btn-block">
+                    @if (item.IsActive == false)
+                    {
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Resultado</a>
+                    }
+                    else
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Finalizar</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

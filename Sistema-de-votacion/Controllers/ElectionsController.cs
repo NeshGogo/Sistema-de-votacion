@@ -182,6 +182,12 @@ namespace Sistema_de_votacion.Controllers
             }
             return View(election);
         }
+        public async Task<IActionResult> ElectionsList()
+        {
+            var elections = (await _electionService.GetElectionsAsync()).OrderBy(e => new { e.IsActive, e.Date });
+            
+            return View(elections);
+        }
         [Authorize]
         // GET: Elections/Delete/5
         public async Task<IActionResult> Delete(int? id)
