@@ -28,7 +28,7 @@ namespace Sistema_de_votacion.Services.Candidates
         {
             return _candidateRepository.GetAll();
         }
-        public Candidate UdateCandidate(Candidate candidate)
+        public Candidate UpdateCandidate(Candidate candidate)
         {
             return _candidateRepository.Update(candidate);
         }

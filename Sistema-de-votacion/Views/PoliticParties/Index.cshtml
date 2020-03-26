@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Sistema_de_votacion.Models.PoliticParty>
+﻿@*@model IEnumerable<Sistema_de_votacion.Models.PoliticParty>
 
 @{
 //Layout = null;
@@ -12,50 +12,80 @@
     <title>Index</title>
 </head>
 <body>
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PartyLogoPath)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsActive)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PartyLogoPath)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-</body>
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PartyLogoPath)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IsActive)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PartyLogoPath)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsActive)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>*@
+    @model IEnumerable<Sistema_de_votacion.Models.PoliticParty>
+    <body>
+        <h4>Listado de Partidos</h4>
+
+        <p>
+            <a asp-action="Create" class="btn btn-primary">Crear nuevo</a>
+        </p>
+        <div class="card-deck">
+            @foreach (var politicParty in Model)
+            {
+                var photoPath = "~/images/" + (politicParty.PartyLogoPath ?? "Anonimo.jpg");
+                <div class="card m-3" style="min-width:14rem; max-width:23.5%">
+                    <div class="card-header text-center">
+                        <h6>@(politicParty.Name)</h6>
+                        @*<h4>@politicParty.Description</h4>*@
+                    </div>
+                    <img class="card-img-top imageThumbnail" src="@photoPath" asp-append-version="true" />
+                    <div class="card-footer text-center">
+                        @*<a asp-controller="Candidates" asp-action="Details" asp-route-id="@candidate.Id"
+                        class="btn btn-primary m-1">View</a>*@
+                        @*<a href="#" class="btn btn-primary">View</a>*@
+                        <a asp-action="Edit" asp-route-id="@politicParty.Id" class="btn btn-warning btn-sm" style="width:auto">Editar</a> |
+                        <a asp-action="Details" asp-route-id="@politicParty.Id" class="btn btn-info btn-sm" style="width:auto">Detalle</a> |
+                        <a asp-action="Delete" asp-route-id="@politicParty.Id" class="btn btn-danger btn-sm" style="width:auto">Eliminar</a>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </body>
 </html>

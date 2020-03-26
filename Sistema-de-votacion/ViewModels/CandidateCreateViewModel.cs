@@ -26,6 +26,8 @@ namespace Sistema_de_votacion.ViewModels
         //[Required(ErrorMessage = "Este campo obligatorio")]
         [Display(Name = "Foto de perfil")]
         public IFormFile ProfilePhothoPath { get; set; }
+        [Display(Name = "Foto de Primera Subida")]
+        public string photoName  { get; set; }
         [Required(ErrorMessage = "Este campo obligatorio")]
         [Display(Name = "Esta Activo")]
         public bool IsActive { get; set; }

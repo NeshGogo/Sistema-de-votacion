@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +12,7 @@ using Sistema_de_votacion.Data;
 using Sistema_de_votacion.Data.PoliticParties;
 using Sistema_de_votacion.Models;
 using Sistema_de_votacion.Services.PoliticParties;
+using Sistema_de_votacion.ViewModels;
 
 namespace Sistema_de_votacion.Controllers
 {
@@ -61,14 +63,24 @@ namespace Sistema_de_votacion.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(/*[Bind("Id,Name,Description,PartyLogoPath,IsActive")]*/ PoliticParty politicParty)
+        public async Task<IActionResult> Create(PoliticPartyCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
+                string uniqueFileName = ProcessUploadedFile(model);
+                PoliticParty politicParty = new PoliticParty
+                {
+                    Name = model.Name,
+                    Description = model.Description,
+                    PartyLogoPath= uniqueFileName,
+                    IsActive=model.IsActive
+
+                };
+
                 _politicPartyService.InsertPoliticParty(politicParty);
                 return RedirectToAction(nameof(Index));
             }
-            return View(politicParty);
+            return View(model);
         }
 
         // GET: PoliticParties/Edit/5
@@ -80,11 +92,23 @@ namespace Sistema_de_votacion.Controllers
             }
 
             var politicParty = await _politicPartyService.GetPoliticParties().FirstOrDefaultAsync(pp=>pp.Id==id);
+
+            var politicPartyCreateViewModel = new PoliticPartyCreateViewModel()
+            {
+                Id=politicParty.Id,
+                Name = politicParty.Name,
+                Description= politicParty.Description,
+                Photo=politicParty.PartyLogoPath,
+                IsActive=politicParty.IsActive
+
+            };
+
+
             if (politicParty == null)
             {
                 return NotFound();
             }
-            return View(politicParty);
+            return View(politicPartyCreateViewModel);
         }
 
         // POST: PoliticParties/Edit/5
@@ -92,15 +116,30 @@ namespace Sistema_de_votacion.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,/* [Bind("Id,Name,Description,PartyLogoPath,IsActive")]*/ PoliticParty politicParty)
+        public async Task<IActionResult> Edit(int id,/* [Bind("Id,Name,Description,PartyLogoPath,IsActive")]*/ PoliticPartyCreateViewModel model)
         {
-            if (id != politicParty.Id)
+            if (id != model.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                string uniqueFileName = ProcessUploadedFile(model);
+                if (uniqueFileName == null)
+                {
+                    uniqueFileName = model.Photo;
+                }
+
+                var politicParty = new PoliticParty()
+                {
+                    Id = model.Id,
+                    Name = model.Name,
+                    Description = model.Description,
+                    PartyLogoPath = uniqueFileName,
+                    IsActive = model.IsActive
+
+                };
                 try
                 {
                     _politicPartyService.UdatePoliticParty(politicParty);
@@ -119,7 +158,7 @@ namespace Sistema_de_votacion.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(politicParty);
+            return View(model);
         }
 
         // GET: PoliticParties/Delete/5
@@ -154,5 +193,23 @@ namespace Sistema_de_votacion.Controllers
         {
             return _politicPartyService.GetPoliticParties().Any(e => e.Id == id);
         }
+        private string ProcessUploadedFile(PoliticPartyCreateViewModel model)
+        {
+            string uniqueFileName = null;
+            if (model.PartyLogoPath != null)
+            {
+                string uploadFolder = Path.Combine(_hostingEnvironment.WebRootPath, "Images");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + model.PartyLogoPath.FileName;
+                string filePath = Path.Combine(uploadFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.PartyLogoPath.CopyTo(fileStream);
+                }
+
+            }
+
+            return uniqueFileName;
+        }
     }
 }
+

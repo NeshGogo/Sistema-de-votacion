@@ -12,7 +12,7 @@ namespace Sistema_de_votacion.Services.Candidates
         IQueryable<Candidate> GetCandidates();
 
         Candidate GetCandidateById(int? Id);
-        Candidate UdateCandidate(Candidate candidate);
+        Candidate UpdateCandidate(Candidate candidate);
         Candidate DeleteCandidate(Candidate candidate);
     }
 }

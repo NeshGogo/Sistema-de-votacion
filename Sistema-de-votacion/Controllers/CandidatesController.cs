@@ -107,13 +107,24 @@ namespace Sistema_de_votacion.Controllers
             }
 
             var candidate = await _candidateService.GetCandidates().FirstAsync(c=>c.Id==id);
+
+            var candidateViewModel = new CandidateCreateViewModel()
+            {
+                Id=candidate.Id,
+                Name=candidate.Name,
+                LastName=candidate.LastName,
+                IsActive=candidate.IsActive,
+                photoName=candidate.ProfilePhothoPath
+
+            };
+
             if (candidate == null)
             {
                 return NotFound();
             }
             ViewData["PoliticPartyId"] = new SelectList(_politicPartyService.GetPoliticParties(), "Id", "Description", candidate.PoliticPartyId);
             ViewData["PositionId"] = new SelectList(_positionService.GetPositions(), "Id", "Description", candidate.PositionId);
-            return View(candidate);
+            return View(candidateViewModel);
         }
 
         // POST: Candidates/Edit/5
@@ -121,18 +132,34 @@ namespace Sistema_de_votacion.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,LastName,PoliticPartyId,PositionId,ProfilePhothoPath,IsActive")] Candidate candidate)
+        public async Task<IActionResult> Edit(int id, CandidateCreateViewModel model)
         {
-            if (id != candidate.Id)
+            if (id != model.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                string uniqueFileName = ProcessUploadedFile(model);
+                if (uniqueFileName==null)
+                {
+                    uniqueFileName = model.photoName;
+                }
+                Candidate candidate = new Candidate
+                {
+                    //Id= model.Id,
+                    Name = model.Name,
+                    LastName = model.LastName,
+                    PoliticPartyId = model.PoliticPartyId,
+                    PositionId = model.PositionId,
+                    ProfilePhothoPath = uniqueFileName,
+                    IsActive = model.IsActive
+
+                };
                 try
                 {
-                    _candidateService.UdateCandidate(candidate);
+                    _candidateService.UpdateCandidate(candidate);
                     //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -148,9 +175,9 @@ namespace Sistema_de_votacion.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PoliticPartyId"] = new SelectList(_politicPartyService.GetPoliticParties(), "Id", "Description", candidate.PoliticPartyId);
-            ViewData["PositionId"] = new SelectList(_positionService.GetPositions(), "Id", "Description", candidate.PositionId);
-            return View(candidate);
+            ViewData["PoliticPartyId"] = new SelectList(_politicPartyService.GetPoliticParties(), "Id", "Description", model.PoliticPartyId);
+            ViewData["PositionId"] = new SelectList(_positionService.GetPositions(), "Id", "Description", model.PositionId);
+            return View(model);
         }
 
         // GET: Candidates/Delete/5
@@ -180,7 +207,7 @@ namespace Sistema_de_votacion.Controllers
         {
             var candidate = await _candidateService.GetCandidates().FirstAsync(c=>c.Id==id);
             candidate.IsActive = false;
-            _candidateService.UdateCandidate(candidate);
+            _candidateService.UpdateCandidate(candidate);
             //_candidateService.DeleteCandidate(candidate);
             //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
