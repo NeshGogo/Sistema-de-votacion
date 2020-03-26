@@ -79,8 +79,8 @@ namespace Sistema_de_votacion.Controllers
         }
         public async Task<IActionResult> Votation(Citizen citizen)
         {
-            _positionQty =   _positionService.GetPositions().Count();
-            var election = (await _electionService.GetElections()).Where(e=>e.IsActive).Include(p=>p.ElectionPosition).Include(c=>c.ElectionCitizen);
+            _positionQty =  (await _positionService.GetPositionsAsync()).Count();
+            var election = (await _electionService.GetElectionsAsync()).Where(e=>e.IsActive).Include(p=>p.ElectionPosition).Include(c=>c.ElectionCitizen);
             
             for (int i =0; i< _positionQty;i++)
             {
