@@ -25,6 +25,7 @@ namespace Sistema_de_votacion.Controllers
         private readonly IPoliticPartyService _politicPartyService;
         private readonly ICitizenService _citizenService;
         private readonly IMapper _mapper;
+        private  int _positionQty;
 
         public ElectionsController(IElectionService electionService, IPositionService positionService, ICandidateService candidateService, 
                                     IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper)
@@ -75,7 +76,14 @@ namespace Sistema_de_votacion.Controllers
         }
         public async Task<IActionResult> Votation(Citizen citizen)
         {
-            return View();
+            _positionQty =   _positionService.GetPositions().Count();
+            var election = (await _electionService.GetElections()).Where(e=>e.IsActive).Include(p=>p.ElectionPosition).Include(c=>c.ElectionCitizen);
+            
+            for (int i =0; i< _positionQty;i++)
+            {
+                return View(election);
+            }
+            return View("");
         }
 
         [Authorize]

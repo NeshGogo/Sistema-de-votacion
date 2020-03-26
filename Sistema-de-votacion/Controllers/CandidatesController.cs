@@ -93,8 +93,8 @@ namespace Sistema_de_votacion.Controllers
                 //await _candidateService.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PoliticPartyId"] = new SelectList(_politicPartyService.GetPoliticParties(), "Id", "Description", model.PoliticPartyId);
-            ViewData["PositionId"] = new SelectList(_positionService.GetPositions(), "Id", "Description", model.PositionId);
+            ViewData["PoliticPartyId"] = new SelectList(_politicPartyService.GetPoliticParties(), "Id", "Name", model.PoliticPartyId);
+            ViewData["PositionId"] = new SelectList(_positionService.GetPositions(), "Id", "Name", model.PositionId);
             return View(model);
         }
 

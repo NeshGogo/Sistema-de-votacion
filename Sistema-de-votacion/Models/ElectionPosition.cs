@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Sistema_de_votacion.Models
 {
-    public partial class ElectionPosition
+    public class ElectionPosition
     {
         public int Id { get; set; }
         public int ElectionId { get; set; }
