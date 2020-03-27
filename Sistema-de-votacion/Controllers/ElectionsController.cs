@@ -167,6 +167,11 @@ namespace Sistema_de_votacion.Controllers
         // GET: Elections/Create
         public async Task<IActionResult> Create()
         {
+            if (await _electionService.VerifyElectionOpenAsync())
+            {
+                @ViewBag.Message = "No es posible inicial un proceso de eleccion porque ya existe uno abierto en estos momentos.";
+                return RedirectToAction(nameof(ElectionsList));
+            }
             var candidates = await _candidateService.GetCandidates().Where(c => c.IsActive == true).Include(c=> c.Position).Include(c=> c.PoliticParty).OrderBy(c=>c.Position.Name).ToListAsync();
             var candidateElection = _mapper.Map<List<Candidate>, List<CandidateElectionViewModel>>(candidates);
             ElectionCreateViewModel electionCreateViewModel = new ElectionCreateViewModel { ElectionCadidate = candidateElection };
@@ -177,11 +182,7 @@ namespace Sistema_de_votacion.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create( ElectionCreateViewModel electionViewModel)
         {
-            if ( await _electionService.VerifyElectionOpenAsync())
-            {
-                @ViewBag.Message = "No es posible inicial un proceso de eleccion porque ya existe uno abierto en estos momentos.";
-                return RedirectToAction(nameof(ElectionsList));
-            }
+            
             var candidatesSelectedId = (string[])TempData[Configuration.CandidatesElectionCreateSelected];
             if (ModelState.IsValid)
             {
