@@ -12,14 +12,8 @@ namespace Sistema_de_votacion.ViewModels
         [Display(Name ="Nombre")]
         public string Name { get; set; }
 
-
-        [Required(ErrorMessage = "Este campo es requerido.")]
-        [Display(Name = "Posiciones")]
-        public List<int> ElectionPosition { get; set; }
-
-        [Required(ErrorMessage = "Este campo es requerido.")]
         [Display(Name = "Candidatos")]
-        public  List<int> ElectionCadidate { get; set; }
+        public  List<CandidateElectionViewModel> ElectionCadidate { get; set; }
 
 
 

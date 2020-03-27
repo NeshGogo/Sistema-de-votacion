@@ -47,18 +47,16 @@ namespace Sistema_de_votacion.Services.Elections
             return await Task.FromResult(_electionRepository.GetAll());
         }
 
-        public async Task<Election> InsertElectionAsync(Election election, List<int> electionCandidates, List<int> electionPositions)
+        public async Task<Election> InsertElectionAsync(Election election, List<Candidate> electionCandidates)
         {
             election.Date = DateTime.UtcNow;
             election.IsActive = true;
             Election result = await Task.FromResult(_electionRepository.Insert(election));
             if (result != null)
             {
-                List<ElectionCadidate> cadidates = electionCandidates.Select(e => new ElectionCadidate { CandidateId = e, ElectionId = result.Id }).ToList();
-                List<ElectionPosition> positions = electionPositions.Select(e => new ElectionPosition { PositionId = e, ElectionId = result.Id }).ToList();                
+                List<ElectionCadidate> cadidates = electionCandidates.Select(e => new ElectionCadidate { CandidateId = e.Id, ElectionId = result.Id }).ToList();                
 
                 _electionCandidateRepository.Insert(cadidates);
-                _electionPositionRepository.Insert(positions);
             }
             return result;
         }

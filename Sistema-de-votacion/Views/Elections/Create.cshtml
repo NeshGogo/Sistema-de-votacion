@@ -1,57 +1,109 @@
 ﻿@model Sistema_de_votacion.ViewModels.ElectionCreateViewModel
-
-
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Create</title>
-</head>
-<body>
-
-    <h4 class="display-4 text-center">Crear una nueva election</h4>
-    <hr />
-    <form asp-action="Create" class="mt-5">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="row justify-content-xl-center">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label asp-for="Name" class="control-label"></label>
-                    <input asp-for="Name" class="form-control" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <div>
-                        <label asp-for="ElectionPosition" class="control-label"></label>
-                    </div>
-                    <select class="form-control" asp-for="ElectionPosition" asp-items="ViewBag.Positions" multiple></select>
-                    <span asp-validation-for="ElectionPosition" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <div>
-                        <label asp-for="ElectionCadidate" class="control-label"></label>
-                    </div>
-                    <select class="form-control" asp-for="ElectionCadidate" asp-items="ViewBag.Candidates" multiple></select>
-                    <span asp-validation-for="ElectionCadidate" class="text-danger"></span>
-                </div>
-
-            </div>
-
+@{
+    List<string> candidates = new List<string>();
+}
+<h4 class="display-4 text-center">Iniciar un proceso de eleccion.</h4>
+<hr />
+@if (@ViewBag.Message != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Advertencia!</strong> @ViewBag.Message
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+<form asp-action="Create" class="mt-5">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-md-5">
+        <div class="form-group">
+            <label asp-for="Name" class="control-label font-weight-bold"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
         </div>
-        <div class="form-group text-center">
-            <input type="submit" value="Crear" class="btn btn-primary" /> 
-            <span>||</span>
-            <a  class="btn btn-secondary" asp-action="Index">Volver</a>
-        </div>
-    </form>
-
-    <div>
-       
     </div>
 
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    }
-</body>
-</html>
+    <h3 class="text-center mt-5 mb-3">Seleccione los candidatos.</h3>
+
+    <div>
+        <table class="table table-striped table-hover table-bordered text-center">
+            <thead class="thead-dark">
+                <tr>
+                    <th hidden>
+                        ID
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ElectionCadidate.FirstOrDefault().Name) y
+                        @Html.DisplayNameFor(model => model.ElectionCadidate.FirstOrDefault().LastName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ElectionCadidate.FirstOrDefault().PoliticPartyId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ElectionCadidate.FirstOrDefault().PositionId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ElectionCadidate.FirstOrDefault().Selected)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ElectionCadidate)
+                {
+                    <tr>
+                        <td hidden>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                            @Html.DisplayFor(modelItem => item.LastName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PoliticParty.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Position.Name)
+                        </td>
+                        <td>
+                            <label class="form-group form-check">
+
+                                @Html.CheckBoxFor(model => item.Selected, new { @id = "Candidates" })
+                            </label>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="form-group text-center">
+        <input type="submit" value="Iniciar" class="btn btn-primary" />
+        <span>||</span>
+        <a class="btn btn-secondary" asp-action="Index">Volver</a>
+    </div>
+</form>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            var candidates = [];
+            $('input[type="checkbox"]').change(function () {
+                var tr = $(this).closest('tr');
+                var id = $(tr).find('td:nth-child(1)').text().trim();
+                if ($(this).is(':checked')) {
+                    candidates.push(id);
+                } else {
+                    for (var i = 0; i < candidates.length; i++) {
+                        if (candidates[i] == id) {
+                            candidates.splice(i, 1);
+                        }
+                    }
+                }
+                $.post('CandidatesSelected', { candidates: candidates });
+            })
+        })
+    </script>
+}
+

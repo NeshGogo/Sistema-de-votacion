@@ -9,7 +9,7 @@ namespace Sistema_de_votacion.Services.Elections
 {
     public interface IElectionService
     {
-        Task<Election> InsertElectionAsync(Election election, List<int> ElectionCandidates, List<int> ElectionPositions);
+        Task<Election> InsertElectionAsync(Election election, List<Candidate> ElectionCandidates);
         Task<IQueryable<Election>> GetElectionsAsync();
         Task<Election> GetElectionByIdAsync(int? id);
         Task<Election> UpdateElectionAsync(Election election);
