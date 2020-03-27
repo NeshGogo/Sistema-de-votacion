@@ -184,7 +184,7 @@ namespace Sistema_de_votacion.Controllers
                     electionViewModel.ElectionPosition);
                 if (result!=null)
                 {
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(ElectionsList));
                 }
                 ModelState.AddModelError("", "Ocurrion un erro al insertar la eleccion.");
             }
@@ -237,6 +237,12 @@ namespace Sistema_de_votacion.Controllers
             }
             return View(election);
         }
+        public async Task<IActionResult> ElectionsList()
+        {
+            var elections = (await _electionService.GetElectionsAsync()).OrderBy(e => new { e.IsActive, e.Date });
+            
+            return View(elections);
+        }
         [Authorize]
         // GET: Elections/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -263,7 +269,7 @@ namespace Sistema_de_votacion.Controllers
             var election = await _electionService.GetElectionByIdAsync(id);
             await _electionService.DeleteElectionAsync(election);
      
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(ElectionsList));
         }
 
         private async Task<bool> ElectionExists(int id)
