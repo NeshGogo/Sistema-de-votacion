@@ -26,6 +26,7 @@ namespace Sistema_de_votacion.Data
         public virtual DbSet<ElectionPosition> ElectionPosition { get; set; }
         public virtual DbSet<PoliticParty> PoliticParty { get; set; }
         public virtual DbSet<Position> Position { get; set; }
+        public virtual DbSet<Result> Result { get; set; }
 
 
 

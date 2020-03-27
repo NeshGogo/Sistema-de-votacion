@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Sistema_de_votacion.Data.Results;
+using Sistema_de_votacion.Helpers;
 using Sistema_de_votacion.Models;
 using Sistema_de_votacion.Services.Candidates;
 using Sistema_de_votacion.Services.Candidates.Positions;
@@ -25,10 +28,11 @@ namespace Sistema_de_votacion.Controllers
         private readonly IPoliticPartyService _politicPartyService;
         private readonly ICitizenService _citizenService;
         private readonly IMapper _mapper;
+        private readonly IResultRepository _resultRepository;
         private  int _positionQty;
 
         public ElectionsController(IElectionService electionService, IPositionService positionService, ICandidateService candidateService, 
-                                    IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper)
+                                    IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper, IResultRepository resultRepository)
         {
             _electionService = electionService;
             _positionService = positionService;
@@ -36,6 +40,7 @@ namespace Sistema_de_votacion.Controllers
             _politicPartyService = politicPartyService;
             _citizenService = citizenService;
             _mapper = mapper;
+            this._resultRepository = resultRepository;
         }
 
         // GET: Elections
@@ -77,18 +82,68 @@ namespace Sistema_de_votacion.Controllers
 
             return View(votationLoginViewModel);
         }
-        public async Task<IActionResult> Votation(Citizen citizen)
+        [HttpGet]
+        public async Task<IActionResult> Votation(ElectionVotationViewModel model)
         {
             _positionQty =  (await _positionService.GetPositionsAsync()).Count();
-            var election = (await _electionService.GetElectionsAsync()).Where(e=>e.IsActive).Include(p=>p.ElectionPosition).Include(c=>c.ElectionCitizen);
-            
-            for (int i =0; i< _positionQty;i++)
-            {
-                return View(election);
-            }
-            return View("");
-        }
+            var election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive).Include(p => p.ElectionPosition).Include(c => c.ElectionCitizen).ToList();
+            ViewBag.Election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive).Include(p => p.ElectionPosition).Include(c => c.ElectionCitizen).ToList();
 
+            model.Id = election[0].Id;
+            model.Name = election[0].Name;
+            model.Date = election[0].Date;
+            model.IsActive = election[0].IsActive;
+            model.ElectionCadidate = election[0].ElectionCadidate;
+            model.ElectionCitizen = election[0].ElectionCitizen;
+            model.ElectionPoliticParty = election[0].ElectionPoliticParty;
+            model.ElectionPosition = election[0].ElectionPosition;
+            model.PositionIndex = model.PositionIndex + 1;
+            var positions = (await _positionService.GetPositionsAsync()).Include(c => c.Candidate).Include(ep=>ep.ElectionPosition).ToList();
+            model.Position = positions.ElementAt(model.PositionIndex - 1);
+            model.Candidates = _candidateService.GetCandidates().Include(pp => pp.PoliticParty).Include(p=>p.Position).Where(p=>p.Position== model.Position).ToList();
+            
+
+
+
+            return View(model);
+            
+        }
+        [HttpPost]
+        public async Task<IActionResult> Votation(ElectionVotationViewModel model, int CitizenId, int CandidateId)
+        {
+            //Result result = new Result()
+            //{
+            //    ElectionId = model.Id,
+            //    CandidateId=CandidateId,
+            //    CitizenId=CandidateId
+            //};
+
+            //_resultRepository.Insert(result);
+            //TODO: Filtrar las posiciones en electionposition y enviar desde view CitizenId y CandidateId
+            HttpContext.Session.SetString(Configuration.KeyName,"Prueba");
+            var election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive).Include(p => p.ElectionPosition).Include(c => c.ElectionCitizen).ToList();
+            ViewBag.Election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive).Include(p => p.ElectionPosition).Include(c => c.ElectionCitizen).ToList();
+
+            model.Id = election[0].Id;
+            model.Name = election[0].Name;
+            model.Date = election[0].Date;
+            model.IsActive = election[0].IsActive;
+            model.ElectionCadidate = election[0].ElectionCadidate;
+            model.ElectionCitizen = election[0].ElectionCitizen;
+            model.ElectionPoliticParty = election[0].ElectionPoliticParty;
+            model.ElectionPosition = election[0].ElectionPosition;
+            model.PositionIndex = model.PositionIndex + 1;
+            var positions = (await _positionService.GetPositionsAsync()).Include(c => c.Candidate).Include(ep => ep.ElectionPosition).ToList();
+            model.Position = positions.ElementAt(model.PositionIndex - 1);
+            model.Candidates = _candidateService.GetCandidates().Include(pp => pp.PoliticParty).Include(p => p.Position).Where(p => p.Position == model.Position).ToList();
+            if (model.PositionIndex == positions.Count())
+            {
+                return RedirectToAction("Index", "Elections", model);
+            }
+            return RedirectToAction("Votation", "Elections", model);
+
+            //return View();
+        }
         [Authorize]
         // GET: Elections/Details/5
         public async Task<IActionResult> Details(int? id)

@@ -1,0 +1,44 @@
+﻿@model Sistema_de_votacion.ViewModels.ElectionVotationViewModel
+@{ 
+    List<Election> election = ViewBag.Election;
+    
+}
+
+
+    <h4>Listado de Candidatos para @Model.Position.Name</h4>
+
+    <p>
+        @*<a asp-action="VotationPost" class="btn btn-primary">Crear nuevo</a>*@
+    </p>
+    <form method="post">
+        <div class="form-group" hidden>
+            <label asp-for="PositionIndex" class="control-label"></label>
+            <input asp-for="PositionIndex" class="form-control" />
+            <span asp-validation-for="PositionIndex" class="text-danger"></span>
+        </div>
+        <div class="card-deck">
+
+            @foreach (var candidate in Model.Candidates)
+            {
+                var photoPath = "~/images/" + (candidate.ProfilePhothoPath ?? "Anonimo.jpg");
+                <div class="card m-3" style="min-width:14rem; max-width:24.5%">
+                    <div class="card-header text-center">
+                        <h6>@(candidate.Name + " " + candidate.LastName)</h6>
+                        <h6>@candidate.PoliticParty.Name</h6>
+                        <h6>@candidate.Position.Name</h6>
+                    </div>
+                    <img class="card-img-top imageThumbnail" src="@photoPath" asp-append-version="true" />
+                    <div class="card-footer text-center">
+                        @*<a asp-controller="Candidates" asp-action="Details" asp-route-id="@candidate.Id"
+                        class="btn btn-primary m-1">View</a>*@
+                        @*<a href="#" class="btn btn-primary">View</a>*@
+                        @*<a asp-action="Votation" asp-controller="Elections" asp-route-id="@candidate.Id" asp-route-electionId="@Model.Id" class="btn btn-primary btn-sm" style="width:auto">Votar2</a>*@
+                        <button asp-action="Votation" type="submit" asp-controller="Elections" asp-route-id="@candidate.Id" asp-route-electionId="@Model.Id" class="btn btn-primary btn-sm" style="width:auto">Votar1</button>
+                        @*<input asp-action="Votation" type="submit" value="Votar" asp-controller="Elections" asp-route-id="@candidate.Id" asp-route-electionId="@Model.Id" class="btn btn-primary btn-sm" style="width:auto" />*@
+
+                    </div>
+                </div>
+            }
+
+        </div>
+    </form>

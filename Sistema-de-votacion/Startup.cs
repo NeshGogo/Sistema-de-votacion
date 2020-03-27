@@ -28,6 +28,7 @@ using Sistema_de_votacion.Data.ElectionCandidates;
 using Sistema_de_votacion.Data.ElectionPositions;
 using Sistema_de_votacion.Data.ElectionCitizens;
 using Sistema_de_votacion.Data.ElectionPoliticParties;
+using Sistema_de_votacion.Data.Results;
 
 namespace Sistema_de_votacion
 {
@@ -68,6 +69,9 @@ namespace Sistema_de_votacion
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            services.AddDistributedMemoryCache();
+            services.AddSession();
+
             services.AddScoped<ICandidateRepository, CandidateRepository>();
             services.AddScoped<IPoliticPartyRepository, PoliticPartyRepository>();
             services.AddScoped<IPositionRepository, PositionRepository>();
@@ -82,6 +86,7 @@ namespace Sistema_de_votacion
             services.AddScoped<IElectionPositionRepository, ElectionPositionRepository>();
             services.AddScoped<IElectionCitizenRepository, ElectionCitizenRepository>();
             services.AddScoped<IElectionPoliticPartyRepository, ElectionPoliticPartyRepository>();
+            services.AddScoped<IResultRepository, ResultRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -101,6 +106,7 @@ namespace Sistema_de_votacion
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseSession();
             app.UseAuthentication();
             
             app.UseMvc(routes =>
