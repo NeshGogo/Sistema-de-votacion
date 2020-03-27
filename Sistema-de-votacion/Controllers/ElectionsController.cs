@@ -177,7 +177,7 @@ namespace Sistema_de_votacion.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create( ElectionCreateViewModel electionViewModel)
         {
-            var candidatesSelectedId = (string[])TempData["CandidatesElectionCreateSelected"];
+            var candidatesSelectedId = (string[])TempData[Configuration.CandidatesElectionCreateSelected];
             if (ModelState.IsValid)
             {
                 var candidatesSelected = await _candidateService.GetCandidates().Include(c => c.Position).Where(c => candidatesSelectedId.Contains(c.Id.ToString())).ToListAsync();
@@ -298,7 +298,7 @@ namespace Sistema_de_votacion.Controllers
         [HttpPost]
         public void CandidatesSelected(string[] candidates)
         {
-            TempData["CandidatesElectionCreateSelected"] = candidates;
+            TempData[Configuration.CandidatesElectionCreateSelected] = candidates;
         }
         private async Task<bool> ElectionExists(int id)
         {

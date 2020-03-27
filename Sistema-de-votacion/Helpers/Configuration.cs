@@ -8,5 +8,6 @@ namespace Sistema_de_votacion.Helpers
     public static class Configuration
     {
         public static string KeyName => "_name";
+        public static string CandidatesElectionCreateSelected => "_CandidatesElectionCreateSelected";
     }
 }
