@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Sistema_de_votacion.Models.Election>
 @{
     ViewData["Title"] = "ElectionsList";
-    string EleccionActiva = (Model.FirstOrDefault(e => e.IsActive == true) != null) ? "disabled not-allowed" : "";    
+    string EleccionActiva = ( Model.FirstOrDefault(e => e.IsActive == true) != null) ? "disabled not-allowed" : "";
 }
 
 <h1 class="display-4 text-center">Listado de Elecciones.</h1>

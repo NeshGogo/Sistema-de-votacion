@@ -167,7 +167,7 @@ namespace Sistema_de_votacion.Controllers
         // GET: Elections/Create
         public async Task<IActionResult> Create()
         {
-            var candidates = await _candidateService.GetCandidates().Where(c => c.IsActive == true).Include(c=> c.Position).Include(c=> c.PoliticParty).OrderBy(c=>c.Position).ToListAsync();
+            var candidates = await _candidateService.GetCandidates().Where(c => c.IsActive == true).Include(c=> c.Position).Include(c=> c.PoliticParty).OrderBy(c=>c.Position.Name).ToListAsync();
             var candidateElection = _mapper.Map<List<Candidate>, List<CandidateElectionViewModel>>(candidates);
             ElectionCreateViewModel electionCreateViewModel = new ElectionCreateViewModel { ElectionCadidate = candidateElection };
             return View(electionCreateViewModel);
@@ -177,28 +177,31 @@ namespace Sistema_de_votacion.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create( ElectionCreateViewModel electionViewModel)
         {
+            if ( await _electionService.VerifyElectionOpenAsync())
+            {
+                @ViewBag.Message = "No es posible inicial un proceso de eleccion porque ya existe uno abierto en estos momentos.";
+                return RedirectToAction(nameof(ElectionsList));
+            }
             var candidatesSelectedId = (string[])TempData[Configuration.CandidatesElectionCreateSelected];
             if (ModelState.IsValid)
             {
                 var candidatesSelected = await _candidateService.GetCandidates().Include(c => c.Position).Where(c => candidatesSelectedId.Contains(c.Id.ToString())).ToListAsync();
-                var postitionSelected = candidatesSelected.Select(c => c.PositionId).Distinct();
+                var postitionSelected = candidatesSelected.Select(c => c.Position.Name).Distinct();
 
                 if (postitionSelected.Count() < 4)
                 {
                     ViewBag.Message = "Debe seleccionar candidatos para 4 posiciones electorales diferentes para poder iniciar un proceso electoral.";
-                    var allcandidates = await _candidateService.GetCandidates()
-                       .Where(c => c.IsActive == true).Include(c => c.Position).Include(c => c.PoliticParty).OrderBy(c => c.Position).ToListAsync();
+                    var allcandidates = await _candidateService.GetCandidates().Where(c => c.IsActive == true).Include(c => c.Position).Include(c => c.PoliticParty).OrderBy(c => c.Position.Name).ToListAsync();
                     electionViewModel.ElectionCadidate = _mapper.Map<List<Candidate>, List<CandidateElectionViewModel>>(allcandidates);
                     return View(electionViewModel);
                 }
 
-                var candidatesSelectedGroupByPosition = candidatesSelected.GroupBy(c => c.Position).Where(c => c.Count() > 1);
+                var candidatesSelectedGroupByPosition = candidatesSelected.GroupBy(c => c.Position.Name).Where(c => c.Count() > 1);
 
                 if (postitionSelected.Count() != candidatesSelectedGroupByPosition.Count())
                 {
                     ViewBag.Message = "Debe seleccionar almenos 2 candidatos por posicion electoral para poder iniciar un proceso electoral.";
-                    var allcandidates = await _candidateService.GetCandidates()
-                       .Where(c => c.IsActive == true).Include(c => c.Position).Include(c => c.PoliticParty).OrderBy(c => c.Position).ToListAsync();
+                    var allcandidates = await _candidateService.GetCandidates().Where(c => c.IsActive == true).Include(c => c.Position).Include(c => c.PoliticParty).OrderBy(c => c.Position.Name).ToListAsync();
                     electionViewModel.ElectionCadidate = _mapper.Map<List<Candidate>, List<CandidateElectionViewModel>>(allcandidates);
                     return View(electionViewModel);
                 }
@@ -261,9 +264,10 @@ namespace Sistema_de_votacion.Controllers
             }
             return View(election);
         }
+        [Authorize]
         public async Task<IActionResult> ElectionsList()
         {
-            var elections = (await _electionService.GetElectionsAsync()).OrderBy(e => new { e.IsActive, e.Date });
+            var elections = (await _electionService.GetElectionsAsync()).OrderBy(e =>  e.IsActive == false).ThenBy( e=> e.Date);
             
             return View(elections);
         }
