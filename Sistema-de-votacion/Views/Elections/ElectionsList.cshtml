@@ -1,11 +1,19 @@
 ﻿@model IEnumerable<Sistema_de_votacion.Models.Election>
 @{
     ViewData["Title"] = "ElectionsList";
-    string EleccionActiva = ( Model.FirstOrDefault(e => e.IsActive == true) != null) ? "disabled not-allowed" : "";
+    string EleccionActiva = (Model.FirstOrDefault(e => e.IsActive == true) != null) ? "disabled not-allowed" : "";
 }
 
 <h1 class="display-4 text-center">Listado de Elecciones.</h1>
-
+@if (@ViewBag.Message != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Advertencia!</strong> @ViewBag.Message
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
 <p>
     <a asp-action="Create" class="btn btn-outline-success pointer-event @EleccionActiva">Añadir nuevo</a>
 </p>
