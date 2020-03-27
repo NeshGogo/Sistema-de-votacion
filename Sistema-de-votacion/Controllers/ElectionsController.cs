@@ -129,7 +129,7 @@ namespace Sistema_de_votacion.Controllers
                     electionViewModel.ElectionPosition);
                 if (result!=null)
                 {
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(ElectionsList));
                 }
                 ModelState.AddModelError("", "Ocurrion un erro al insertar la eleccion.");
             }
@@ -214,7 +214,7 @@ namespace Sistema_de_votacion.Controllers
             var election = await _electionService.GetElectionByIdAsync(id);
             await _electionService.DeleteElectionAsync(election);
      
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(ElectionsList));
         }
 
         private async Task<bool> ElectionExists(int id)
