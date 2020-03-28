@@ -8,14 +8,14 @@ namespace Sistema_de_votacion.ViewModels
 {
     public class ElectionVotationViewModel
     {
-        public int Id { get; set; }
+        public int ElectionId { get; set; }
         public string Name { get; set; }
         public DateTime Date { get; set; }
         public bool IsActive { get; set; }
         public int PositionIndex { get; set; }
         public Position Position { get; set; }
         public List<Candidate> Candidates { get; set; }
-        public Citizen Citizen { get; set; }
+        public int CitizenId { get; set; }
 
         public virtual ICollection<ElectionCadidate> ElectionCadidate { get; set; }
         public virtual ICollection<ElectionCitizen> ElectionCitizen { get; set; }

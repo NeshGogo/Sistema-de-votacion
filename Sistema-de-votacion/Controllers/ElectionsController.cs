@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Sistema_de_votacion.Data.ElectionCitizens;
 using Sistema_de_votacion.Data.Results;
 using Sistema_de_votacion.Helpers;
 using Sistema_de_votacion.Models;
@@ -29,10 +30,11 @@ namespace Sistema_de_votacion.Controllers
         private readonly ICitizenService _citizenService;
         private readonly IMapper _mapper;
         private readonly IResultRepository _resultRepository;
+        private readonly IElectionCitizenRepository _electionCitizenRepository;
         private  int _positionQty;
 
         public ElectionsController(IElectionService electionService, IPositionService positionService, ICandidateService candidateService, 
-                                    IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper, IResultRepository resultRepository)
+                                    IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper, IResultRepository resultRepository, IElectionCitizenRepository electionCitizenRepository)
         {
             _electionService = electionService;
             _positionService = positionService;
@@ -41,6 +43,7 @@ namespace Sistema_de_votacion.Controllers
             _citizenService = citizenService;
             _mapper = mapper;
             this._resultRepository = resultRepository;
+            this._electionCitizenRepository = electionCitizenRepository;
         }
 
         // GET: Elections
@@ -75,7 +78,7 @@ namespace Sistema_de_votacion.Controllers
                     return View(votationLoginViewModel);
                 }
 
-                return RedirectToAction("Votation", new { citizen = citizen}); ;
+                return RedirectToAction("Votation", citizen/*new { citizen = citizen }*/); 
                 
             }
 
@@ -100,36 +103,59 @@ namespace Sistema_de_votacion.Controllers
 
 
             ViewBag.Election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive).Include(p => p.ElectionPosition).Include(c => c.ElectionCitizen).ToList();
-            if(model.Id == 0 )
+            if(model.ElectionId == 0 )
             {
                 model = _mapper.Map<Election, ElectionVotationViewModel>(election);
                 model.PositionIndex = model.PositionIndex;
+                model.CitizenId = citizen.Id;
             }           
 
-            model.Citizen = citizen;
+            
             
             var positions = election.ElectionCadidate.Select(ce => ce.Candidate).Select(c => c.Position).Where(p => p.IsActive == true).Distinct();
             model.Position = positions.ElementAt(model.PositionIndex);
             model.Candidates = election.ElectionCadidate.Select(ec => ec.Candidate).Where(c=> c.Position == model.Position).ToList();
-
+            
      
 
             return View(model);
             
         }
         [HttpPost]
-        public async Task<IActionResult> Votation(ElectionVotationViewModel model, int CitizenId, int CandidateId)
+        public async Task<IActionResult> Votation(ElectionVotationViewModel model, int candidateId)
         {
-            //Result result = new Result()
-            //{
-            //    ElectionId = model.Id,
-            //    CandidateId=CandidateId,
-            //    CitizenId=CandidateId
-            //};
+            Result result = new Result()
+            {
+                ElectionId = model.ElectionId,
+                CandidateId=candidateId,
+                CitizenId=model.CitizenId
+            };
+            ElectionCitizen elctionCitizen = new ElectionCitizen()
+            {
+                ElectionId=model.ElectionId,
+                CitizenId=model.CitizenId
+            };
 
-            //_resultRepository.Insert(result);
-            //TODO: Filtrar las posiciones en electionposition y enviar desde view CitizenId y CandidateId
-            HttpContext.Session.SetString(Configuration.KeyName,"Prueba");
+            _electionCitizenRepository.Insert(elctionCitizen);
+            _resultRepository.Insert(result);
+            var candidate = _candidateService.GetCandidateById(candidateId);
+
+            if (candidate.Position.Name == "Presidente")
+            {
+                HttpContext.Session.SetString(Configuration.Presidente, candidate.Name + " " + candidate.LastName);
+            }
+            else if(candidate.Position.Name == "Alcalde")
+            {
+                HttpContext.Session.SetString(Configuration.Alcalde, candidate.Name + " " + candidate.LastName);
+            }
+            else if (candidate.Position.Name == "Regidor")
+            {
+                HttpContext.Session.SetString(Configuration.Regidor, candidate.Name + " " + candidate.LastName);
+            }
+            else if (candidate.Position.Name == "Senador")
+            {
+                HttpContext.Session.SetString(Configuration.Senador, candidate.Name + " " + candidate.LastName);
+            }
             var politicParties = _politicPartyService.GetPoliticParties().ToList();
             var election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive == true).Include(e => e.ElectionCadidate).ThenInclude(ec => ec.Candidate).ThenInclude(c => c.Position).FirstOrDefault();
 
@@ -151,6 +177,7 @@ namespace Sistema_de_votacion.Controllers
             if (model.PositionIndex == positions.Count())
             {
                 return RedirectToAction("Index", "Elections", model);
+
             }
             return RedirectToAction("Votation", "Elections", model);
 

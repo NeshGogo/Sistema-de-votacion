@@ -19,7 +19,9 @@ namespace Sistema_de_votacion.Helpers
                 .ForMember(e => e.ElectionPosition, ev => ev.Ignore());
             CreateMap<Candidate, CandidateElectionViewModel>();
 
-            CreateMap<Election, ElectionVotationViewModel>().ForMember(e => e.PositionIndex, c => c.Ignore());
+            CreateMap<Election, ElectionVotationViewModel>()
+                .ForMember(e => e.PositionIndex, c => c.Ignore())
+                .ForMember(e=>e.ElectionId, c=>c.MapFrom(a=>a.Id));
         }
     }
 }
