@@ -33,11 +33,11 @@ namespace Sistema_de_votacion.Controllers
         private readonly IMapper _mapper;
         private readonly IResultRepository _resultRepository;
         private readonly IElectionCitizenRepository _electionCitizenRepository;
-        private readonly IEmailSender _emailSender;
+        private readonly Sistema_de_votacion.Mail.IEmailSender _emailSender;
         private  int _positionQty;
 
         public ElectionsController(IElectionService electionService, IPositionService positionService, ICandidateService candidateService, 
-                                    IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper, IResultRepository resultRepository, IElectionCitizenRepository electionCitizenRepository, IEmailSender emailSender)
+                                    IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper, IResultRepository resultRepository, IElectionCitizenRepository electionCitizenRepository, Sistema_de_votacion.Mail.IEmailSender emailSender)
         {
             _electionService = electionService;
             _positionService = positionService;
@@ -180,7 +180,7 @@ namespace Sistema_de_votacion.Controllers
 
             if (model.PositionIndex == positions.Count())
             {
-                var message = new Message(new string[] { "jrosario19@gmail.com" } , "RESULTADO DE VOTACION", "Prueba");
+                var message = new Sistema_de_votacion.Mail.Message(new string[] { "sistemadesarrolloeleccion@gmail.com" } , "RESULTADO DE VOTACION", "Prueba");
 
                 await _emailSender.SendEmailAsync(message);
 
