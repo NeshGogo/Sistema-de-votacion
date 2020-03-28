@@ -11,7 +11,8 @@
         <div>
 
             <input type="hidden" asp-for="PositionIndex" />
-            <input  type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ElectionId" />
+            <input type="hidden" asp-for="CitizenId" />
 
         </div>
         <div class="card-deck">
@@ -27,7 +28,7 @@
                     </div>
                     <img class="card-img-top imageThumbnail" src="@photoPath" asp-append-version="true" />
                     <div class="card-footer text-center">                       
-                        <button asp-action="Votation" type="submit" asp-controller="Elections" class="btn btn-primary btn-sm" style="width:auto">Votar</button>                
+                        <button asp-action="Votation" type="submit" asp-controller="Elections" asp-route-candidateId="@candidate.Id" class="btn btn-primary btn-sm" style="width:auto">Votar</button>                
 
                     </div>
                 </div>
