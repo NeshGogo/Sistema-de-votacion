@@ -29,6 +29,7 @@ using Sistema_de_votacion.Data.ElectionPositions;
 using Sistema_de_votacion.Data.ElectionCitizens;
 using Sistema_de_votacion.Data.ElectionPoliticParties;
 using Sistema_de_votacion.Data.Results;
+using Sistema_de_votacion.Mail;
 
 namespace Sistema_de_votacion
 {
@@ -44,6 +45,11 @@ namespace Sistema_de_votacion
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var emailConfig = Configuration.GetSection("EmailConfiguration")
+                .Get<EmailConfiguration>();
+
+            services.AddSingleton(emailConfig);
+
             services.AddDbContextPool<ElectionDBContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("ElectionDBConnection")));
             //Inyeccion de dependencia de Identity.
