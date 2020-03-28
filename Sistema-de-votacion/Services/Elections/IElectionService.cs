@@ -16,5 +16,6 @@ namespace Sistema_de_votacion.Services.Elections
         Task<Election> DeleteElectionAsync(Election election);
         Task<bool> VerifyCitizenVoteAsync(int CitizenId);
         Task<bool> VerifyElectionOpenAsync();
+        Task<IQueryable<Result>> GetElectionResultsByIdAsync(int electionId);
     }
 }

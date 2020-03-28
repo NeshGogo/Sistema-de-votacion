@@ -165,14 +165,18 @@ namespace Sistema_de_votacion.Controllers
                 return NotFound();
             }
 
-            var election = await _electionService.GetElectionByIdAsync(id);
+            var electionResult =(await _electionService.GetElectionResultsByIdAsync(id.Value)).Include(e => e.Candidate).ThenInclude(e => e.Position);
+            var postions = electionResult.Select(e => e.Candidate).Select(c => c.Position.Name).Distinct().ToList();
+            var candidates = electionResult.Select(e => e.Candidate).ToList();
+            ResultDetailViewMode resultDetailViewMode = new ResultDetailViewMode { Postions = postions, Candidates = candidates };
 
-            if (election == null)
+            if (electionResult == null)
             {
-                return NotFound();
+                ViewBag.Message = "No se encontro ningun resultado de esa eleccion.";
+                return RedirectToAction(nameof(ElectionsList));
             }
 
-            return View(election);
+            return View(resultDetailViewMode);
         }
 
         [Authorize]

@@ -3,6 +3,7 @@ using Sistema_de_votacion.Data.ElectionCitizens;
 using Sistema_de_votacion.Data.ElectionPoliticParties;
 using Sistema_de_votacion.Data.ElectionPositions;
 using Sistema_de_votacion.Data.Elections;
+using Sistema_de_votacion.Data.Results;
 using Sistema_de_votacion.Models;
 using System;
 using System.Collections.Generic;
@@ -19,10 +20,11 @@ namespace Sistema_de_votacion.Services.Elections
         private readonly IElectionCitizenRepository _electionCitizenRepository;
         private readonly IElectionPoliticPartyRepository _electionPoliticPartyRepository;
         private readonly IElectionPositionRepository _electionPositionRepository;
+        private readonly IResultRepository _resultRepository;
 
         public ElectionService(IElectionRepository electionRepository, IElectionCandidateRepository electionCandidateRepository, 
             IElectionCitizenRepository electionCitizenRepository, IElectionPoliticPartyRepository electionPoliticPartyRepository, 
-            IElectionPositionRepository electionPositionRepository)
+            IElectionPositionRepository electionPositionRepository, IResultRepository resultRepository)
         {
            
             _electionRepository = electionRepository;
@@ -30,11 +32,17 @@ namespace Sistema_de_votacion.Services.Elections
             _electionCitizenRepository = electionCitizenRepository;
             _electionPoliticPartyRepository = electionPoliticPartyRepository;
             _electionPositionRepository = electionPositionRepository;
+            _resultRepository = resultRepository;
         }
         public async Task<Election> DeleteElectionAsync(Election election)
         {
             election.IsActive = false;
             return await Task.FromResult(_electionRepository.Update(election));
+        }
+
+        public async Task<IQueryable<Result>> GetElectionResultsByIdAsync(int electionId)
+        {
+           return await Task.FromResult(_resultRepository.GetAll().Where(e => e.ElectionId == electionId));
         }
 
         public async  Task<Election> GetElectionByIdAsync(int? id)
