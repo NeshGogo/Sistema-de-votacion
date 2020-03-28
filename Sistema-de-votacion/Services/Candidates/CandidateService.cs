@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Sistema_de_votacion.Data.Candidates;
 using Sistema_de_votacion.Models;
 
@@ -21,7 +22,7 @@ namespace Sistema_de_votacion.Services.Candidates
         }
         public Candidate GetCandidateById(int? Id)
         {
-            return _candidateRepository.GetById(Id);
+            return _candidateRepository.GetAll().Where(c => c.Id == Id).Include(c => c.Position).FirstOrDefault();
         }
 
         public IQueryable<Candidate> GetCandidates()

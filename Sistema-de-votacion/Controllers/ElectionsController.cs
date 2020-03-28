@@ -190,12 +190,12 @@ namespace Sistema_de_votacion.Controllers
             if (id == null)
             {
                 return NotFound();
-            }
-
-            var electionResult =(await _electionService.GetElectionResultsByIdAsync(id.Value)).Include(e => e.Candidate).ThenInclude(e => e.Position);
+            }            
+            var electionResult =await _electionService.GetElectionResultsByIdAsync(id.Value);
+            string electionName = (await _electionService.GetElectionByIdAsync(id)).Name;
             var postions = electionResult.Select(e => e.Candidate).Select(c => c.Position.Name).Distinct().ToList();
             var candidates = electionResult.Select(e => e.Candidate).ToList();
-            ResultDetailViewMode resultDetailViewMode = new ResultDetailViewMode { Postions = postions, Candidates = candidates };
+            ResultDetailViewMode resultDetailViewMode = new ResultDetailViewMode { Postions = postions, Candidates = candidates, Name = electionName };
 
             if (electionResult == null)
             {

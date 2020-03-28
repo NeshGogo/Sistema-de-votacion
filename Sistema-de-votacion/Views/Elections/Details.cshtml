@@ -1,45 +1,50 @@
-﻿@model Sistema_de_votacion.Models.Election
+﻿@model Sistema_de_votacion.ViewModels.ResultDetailViewMode
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Detalle";
 }
-
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Details</title>
-</head>
-<body>
-
 <div>
-    <h4>Election</h4>
+    <h4>Candidato</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsActive)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsActive)
-        </dd>
+        @foreach (var postion in Model.Postions)
+        {
+            <div class="row">
+                <p >
+                    <span class="font-weight-bold">Posicion: </span>  @Html.DisplayFor(model => postion)
+                </p>
+                <div class="mb-5 col-md-12">
+                    @foreach (var candidate in Model.Candidates.Where(c => c.Position.Name == postion).Distinct())
+                    {
+
+                        <p> <span class="font-weight-bold">Candidato:</span>
+                            @Html.DisplayFor(model => candidate.Name)
+                            @Html.DisplayFor(model => candidate.LastName)
+                        </p>
+                        <p>
+                            <span class="font-weight-bold">Cantidad de votos:</span>  @Model.Candidates.Where(c => c.Id == candidate.Id).Count()
+                        </p>
+                        <p>
+                            <span class="font-weight-bold">Porcentaje:</span> @((Model.Candidates.Where(c => c.Id == candidate.Id).Count() / Model.Candidates.Where(c => c.Position.Name == postion).Count()) * 100)%
+                        </p>
+                    }
+
+                </div>
+            </div>
+           
+            
+        }
+
+
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="ElectionsList" class="btn btn-primary">Volver</a>
 </div>
-</body>
-</html>
+

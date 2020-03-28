@@ -1,8 +1,21 @@
-﻿@model Sistema_de_votacion.ViewModels.ResultDetailViewMode
+﻿@model Sistema_de_votacion.Models.Candidate
 
+@{
+    //Layout = null;
+}
 @{
     ViewData["Title"] = "Detalle";
 }
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Detalle</title>
+</head>
+<body>
+
     <div>
         <h4>Candidato</h4>
         <hr />
@@ -13,34 +26,41 @@
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.Name)
             </dd>
-            @foreach (var postion in Model.Postions)
-            {
-                <dt class="col-sm-2">
-                    Posicion
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => postion)
-                </dd>
-                foreach (var candidate in Model.Candidates.Distinct())
-                {
-
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => candidate.Name)
-                        @Html.DisplayFor(model => candidate.LastName)
-                    </dd>
-                    <dd class="col-sm-10">
-                        Votos: @Model.Candidates.Where(c => c.Id == candidate.Id).Count();
-                    </dd>
-                    <dd class="col-sm-10">
-                        Porcenta: @Model.Candidates.Where(c => c.Id == candidate.Id).Average( c=> c.Id);
-                    </dd>
-                }
-            }
-
-           
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.LastName)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.LastName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ProfilePhothoPath)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ProfilePhothoPath)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.IsActive)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.IsActive)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PoliticParty)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PoliticParty.Name)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Position)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Position.Name)
+            </dd>
         </dl>
     </div>
     <div>
-        <a asp-action="ElectionList" class="btn btn-primary">Volver</a>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a> |
+        <a asp-action="Index" class="btn btn-primary">Regresar a lista</a>
     </div>
-
+</body>
+</html>

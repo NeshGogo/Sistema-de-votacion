@@ -1,4 +1,5 @@
-﻿using Sistema_de_votacion.Data.ElectionCandidates;
+﻿using Microsoft.EntityFrameworkCore;
+using Sistema_de_votacion.Data.ElectionCandidates;
 using Sistema_de_votacion.Data.ElectionCitizens;
 using Sistema_de_votacion.Data.ElectionPoliticParties;
 using Sistema_de_votacion.Data.ElectionPositions;
@@ -40,9 +41,9 @@ namespace Sistema_de_votacion.Services.Elections
             return await Task.FromResult(_electionRepository.Update(election));
         }
 
-        public async Task<IQueryable<Result>> GetElectionResultsByIdAsync(int electionId)
+        public async Task<List<Result>> GetElectionResultsByIdAsync(int electionId)
         {
-           return await Task.FromResult(_resultRepository.GetAll().Where(e => e.ElectionId == electionId));
+           return await _resultRepository.GetAll().Where(e => e.ElectionId == electionId).Include(c => c.Candidate).ThenInclude(c => c.Position).ToListAsync();
         }
 
         public async  Task<Election> GetElectionByIdAsync(int? id)
@@ -76,7 +77,8 @@ namespace Sistema_de_votacion.Services.Elections
 
         public async Task<bool> VerifyCitizenVoteAsync(int citizenId)
         {
-           return await Task.FromResult( _electionCitizenRepository.GetAll().Any(ec => ec.CitizenId == citizenId) );       
+           return await Task.FromResult( _electionCitizenRepository.GetAll().Include(e => e.Election).Where(e => e.Election.IsActive == true)
+               .Any(ec => ec.CitizenId == citizenId) );       
             
         }
 
