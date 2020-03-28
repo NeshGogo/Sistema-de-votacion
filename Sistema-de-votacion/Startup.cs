@@ -93,6 +93,7 @@ namespace Sistema_de_votacion
             services.AddScoped<IElectionCitizenRepository, ElectionCitizenRepository>();
             services.AddScoped<IElectionPoliticPartyRepository, ElectionPoliticPartyRepository>();
             services.AddScoped<IResultRepository, ResultRepository>();
+            services.AddScoped<IEmailSender, EmailSenderGmail>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
