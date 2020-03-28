@@ -75,7 +75,7 @@ namespace Sistema_de_votacion.Controllers
                     return View(votationLoginViewModel);
                 }
 
-                return RedirectToAction("Votation",citizen);
+                return RedirectToAction("Votation", new { citizen = citizen}); ;
                 
             }
 
@@ -83,27 +83,36 @@ namespace Sistema_de_votacion.Controllers
             return View(votationLoginViewModel);
         }
         [HttpGet]
-        public async Task<IActionResult> Votation(ElectionVotationViewModel model)
+        public async Task<IActionResult> Votation(Citizen citizen, ElectionVotationViewModel model)
         {
-            _positionQty =  (await _positionService.GetPositionsAsync()).Count();
-            var election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive).Include(p => p.ElectionPosition).Include(c => c.ElectionCitizen).ToList();
+            _positionQty = (await _positionService.GetPositionsAsync()).Count();
+            var politicParties = _politicPartyService.GetPoliticParties().ToList();
+            var election = (await _electionService.GetElectionsAsync()).Where(e=> e.IsActive == true).Include(e => e.ElectionCadidate).ThenInclude(ec => ec.Candidate).ThenInclude(c=> c.Position).FirstOrDefault();
+
+
+                foreach (var cadidateElection in election.ElectionCadidate)
+                {
+                    PoliticParty politicParty = _politicPartyService.GetPoliticPartyById(cadidateElection.Candidate.PoliticPartyId);
+                    cadidateElection.Candidate.PoliticParty = politicParty;
+                }
+                   
+
+
+
             ViewBag.Election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive).Include(p => p.ElectionPosition).Include(c => c.ElectionCitizen).ToList();
+            if(model.Id == 0 )
+            {
+                model = _mapper.Map<Election, ElectionVotationViewModel>(election);
+                model.PositionIndex = model.PositionIndex;
+            }           
 
-            model.Id = election[0].Id;
-            model.Name = election[0].Name;
-            model.Date = election[0].Date;
-            model.IsActive = election[0].IsActive;
-            model.ElectionCadidate = election[0].ElectionCadidate;
-            model.ElectionCitizen = election[0].ElectionCitizen;
-            model.ElectionPoliticParty = election[0].ElectionPoliticParty;
-            model.ElectionPosition = election[0].ElectionPosition;
-            model.PositionIndex = model.PositionIndex + 1;
-            var positions = (await _positionService.GetPositionsAsync()).Include(c => c.Candidate).Include(ep=>ep.ElectionPosition).ToList();
-            model.Position = positions.ElementAt(model.PositionIndex - 1);
-            model.Candidates = _candidateService.GetCandidates().Include(pp => pp.PoliticParty).Include(p=>p.Position).Where(p=>p.Position== model.Position).ToList();
+            model.Citizen = citizen;
             
+            var positions = election.ElectionCadidate.Select(ce => ce.Candidate).Select(c => c.Position).Where(p => p.IsActive == true).Distinct();
+            model.Position = positions.ElementAt(model.PositionIndex);
+            model.Candidates = election.ElectionCadidate.Select(ec => ec.Candidate).Where(c=> c.Position == model.Position).ToList();
 
-
+     
 
             return View(model);
             
@@ -121,21 +130,24 @@ namespace Sistema_de_votacion.Controllers
             //_resultRepository.Insert(result);
             //TODO: Filtrar las posiciones en electionposition y enviar desde view CitizenId y CandidateId
             HttpContext.Session.SetString(Configuration.KeyName,"Prueba");
-            var election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive).Include(p => p.ElectionPosition).Include(c => c.ElectionCitizen).ToList();
+            var politicParties = _politicPartyService.GetPoliticParties().ToList();
+            var election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive == true).Include(e => e.ElectionCadidate).ThenInclude(ec => ec.Candidate).ThenInclude(c => c.Position).FirstOrDefault();
+
+            
+            foreach (var cadidateElection in election.ElectionCadidate)
+            {
+                PoliticParty politicParty = _politicPartyService.GetPoliticPartyById(cadidateElection.Candidate.PoliticPartyId);
+                cadidateElection.Candidate.PoliticParty = politicParty;
+            }
+            
             ViewBag.Election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive).Include(p => p.ElectionPosition).Include(c => c.ElectionCitizen).ToList();
 
-            model.Id = election[0].Id;
-            model.Name = election[0].Name;
-            model.Date = election[0].Date;
-            model.IsActive = election[0].IsActive;
-            model.ElectionCadidate = election[0].ElectionCadidate;
-            model.ElectionCitizen = election[0].ElectionCitizen;
-            model.ElectionPoliticParty = election[0].ElectionPoliticParty;
-            model.ElectionPosition = election[0].ElectionPosition;
+            
+     
             model.PositionIndex = model.PositionIndex + 1;
-            var positions = (await _positionService.GetPositionsAsync()).Include(c => c.Candidate).Include(ep => ep.ElectionPosition).ToList();
-            model.Position = positions.ElementAt(model.PositionIndex - 1);
-            model.Candidates = _candidateService.GetCandidates().Include(pp => pp.PoliticParty).Include(p => p.Position).Where(p => p.Position == model.Position).ToList();
+            
+            var positions = election.ElectionCadidate.Select(ce => ce.Candidate).Select(c => c.Position).Where(p => p.IsActive == true).Distinct();
+
             if (model.PositionIndex == positions.Count())
             {
                 return RedirectToAction("Index", "Elections", model);

@@ -38,7 +38,7 @@ namespace Sistema_de_votacion.Mail
                     await client.ConnectAsync(_emailConfiguration.SmtpServer,_emailConfiguration.Port, true);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
                     await client.AuthenticateAsync(_emailConfiguration.UserName, _emailConfiguration.Password);
-                    await client.SendAsync(emailMessage)
+                    await client.SendAsync(emailMessage);
                 }
                 catch (Exception)
                 {

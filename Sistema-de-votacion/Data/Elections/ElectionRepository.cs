@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Sistema_de_votacion.Models;
 
 namespace Sistema_de_votacion.Data.Elections
@@ -11,7 +12,7 @@ namespace Sistema_de_votacion.Data.Elections
 
         public ElectionRepository(ElectionDBContext context): base(context)
         {
-
         }
+
     }
 }

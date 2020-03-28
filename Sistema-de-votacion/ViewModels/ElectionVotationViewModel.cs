@@ -15,6 +15,7 @@ namespace Sistema_de_votacion.ViewModels
         public int PositionIndex { get; set; }
         public Position Position { get; set; }
         public List<Candidate> Candidates { get; set; }
+        public Citizen Citizen { get; set; }
 
         public virtual ICollection<ElectionCadidate> ElectionCadidate { get; set; }
         public virtual ICollection<ElectionCitizen> ElectionCitizen { get; set; }
