@@ -144,19 +144,21 @@ namespace Sistema_de_votacion.Controllers
             _resultRepository.Insert(result);
             var candidate = _candidateService.GetCandidateById(candidateId);
 
-            if (candidate.Position.Name == "Presidente")
+            
+
+            if (candidate.Position.Name.Contains("Presidente"))
             {
                 HttpContext.Session.SetString(Configuration.Presidente, candidate.Name + " " + candidate.LastName);
             }
-            else if(candidate.Position.Name == "Alcalde")
+            else if(candidate.Position.Name.Contains("Alcalde"))
             {
                 HttpContext.Session.SetString(Configuration.Alcalde, candidate.Name + " " + candidate.LastName);
             }
-            else if (candidate.Position.Name == "Regidor")
+            else if (candidate.Position.Name.Contains("Regidor"))
             {
                 HttpContext.Session.SetString(Configuration.Regidor, candidate.Name + " " + candidate.LastName);
             }
-            else if (candidate.Position.Name == "Senador")
+            else if (candidate.Position.Name.Contains("Senador"))
             {
                 HttpContext.Session.SetString(Configuration.Senador, candidate.Name + " " + candidate.LastName);
             }
@@ -180,7 +182,12 @@ namespace Sistema_de_votacion.Controllers
 
             if (model.PositionIndex == positions.Count())
             {
-                var message = new Sistema_de_votacion.Mail.Message(new string[] { "sistemadesarrolloeleccion@gmail.com" } , "RESULTADO DE VOTACION", "Prueba");
+                var prueba = HttpContext.Session.GetString(Configuration.Presidente);
+                var message = new Sistema_de_votacion.Mail.Message(new string[] { "sistemadesarrolloeleccion@gmail.com" } , "RESULTADO DE VOTACION", 
+                    "Usted ha votado por los siguientes candidatos: \nPRESIDENTE:"+ HttpContext.Session.GetString(Configuration.Presidente)+
+                                                                    "\nALCALDE:"+ HttpContext.Session.GetString(Configuration.Alcalde) +
+                                                                    "\nREGIDOR:" + HttpContext.Session.GetString(Configuration.Regidor) +
+                                                                    "\nSENADOR:" + HttpContext.Session.GetString(Configuration.Senador));
 
                 await _emailSender.SendEmailAsync(message);
 
