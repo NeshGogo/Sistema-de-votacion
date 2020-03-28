@@ -149,6 +149,7 @@ namespace Sistema_de_votacion.Controllers
             if (candidate.Position.Name.Contains("Presidente"))
             {
                 HttpContext.Session.SetString(Configuration.Presidente, candidate.Name + " " + candidate.LastName);
+       
             }
             else if(candidate.Position.Name.Contains("Alcalde"))
             {
@@ -182,7 +183,7 @@ namespace Sistema_de_votacion.Controllers
 
             if (model.PositionIndex == positions.Count())
             {
-                var prueba = HttpContext.Session.GetString(Configuration.Presidente);
+
                 var message = new Sistema_de_votacion.Mail.Message(new string[] { "sistemadesarrolloeleccion@gmail.com" } , "RESULTADO DE VOTACION", 
                     "Usted ha votado por los siguientes candidatos: \nPRESIDENTE:"+ HttpContext.Session.GetString(Configuration.Presidente)+
                                                                     "\nALCALDE:"+ HttpContext.Session.GetString(Configuration.Alcalde) +
