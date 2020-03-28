@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 using Sistema_de_votacion.Data.ElectionCitizens;
 using Sistema_de_votacion.Data.Results;
 using Sistema_de_votacion.Helpers;
@@ -31,10 +33,11 @@ namespace Sistema_de_votacion.Controllers
         private readonly IMapper _mapper;
         private readonly IResultRepository _resultRepository;
         private readonly IElectionCitizenRepository _electionCitizenRepository;
+        private readonly IEmailSender _emailSender;
         private  int _positionQty;
 
         public ElectionsController(IElectionService electionService, IPositionService positionService, ICandidateService candidateService, 
-                                    IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper, IResultRepository resultRepository, IElectionCitizenRepository electionCitizenRepository)
+                                    IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper, IResultRepository resultRepository, IElectionCitizenRepository electionCitizenRepository, IEmailSender emailSender)
         {
             _electionService = electionService;
             _positionService = positionService;
@@ -44,6 +47,7 @@ namespace Sistema_de_votacion.Controllers
             _mapper = mapper;
             this._resultRepository = resultRepository;
             this._electionCitizenRepository = electionCitizenRepository;
+            this._emailSender = emailSender;
         }
 
         // GET: Elections
@@ -176,6 +180,12 @@ namespace Sistema_de_votacion.Controllers
 
             if (model.PositionIndex == positions.Count())
             {
+                var message = new Message(new string[] { "jrosario19@gmail.com" } , "RESULTADO DE VOTACION", "Prueba");
+
+                await _emailSender.SendEmailAsync(message);
+
+                
+
                 return RedirectToAction("Index", "Elections", model);
 
             }
