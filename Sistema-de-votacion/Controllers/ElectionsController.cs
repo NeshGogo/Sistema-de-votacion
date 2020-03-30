@@ -64,8 +64,8 @@ namespace Sistema_de_votacion.Controllers
             if (ModelState.IsValid)
             {
                 
-                Citizen citizen = (await  _citizenService.GetCitizenByConditionAsync(c => c.Dni == votationLoginViewModel.DNI && c.IsActive == true)).FirstOrDefault();
-                if (citizen == null)
+               
+                if (await _citizenService.VerifyExist(votationLoginViewModel.DNI) == false)
                 {
                     ViewBag.Message = "EL ciudadano no existe o esta inactivo.";
                     return View(votationLoginViewModel);
@@ -76,13 +76,14 @@ namespace Sistema_de_votacion.Controllers
                     ViewBag.Message = "No hay ningun proceso electoral en estos momentos.";
                     return View(votationLoginViewModel);
                 }
+                var citizen = await _citizenService.GetCitizenByConditionAsync(c => c.Dni == votationLoginViewModel.DNI).Result.FirstOrDefaultAsync();
                 if ( await _electionService.VerifyCitizenVoteAsync(citizen.Id))
                 {
                     ViewBag.Message = "Usted ya ejercion su derecho al voto.";
                     return View(votationLoginViewModel);
                 }
 
-                return RedirectToAction("Votation", citizen/*new { citizen = citizen }*/); 
+                return RedirectToAction("Votation", citizen); 
                 
             }
 

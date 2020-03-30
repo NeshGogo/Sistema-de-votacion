@@ -85,7 +85,12 @@ namespace Sistema_de_votacion.Controllers
         {
             if (ModelState.IsValid)
             {
-                citizen.IsActive = true;
+                bool Exist = await _citizenServices.VerifyExist(citizen.Dni);
+                if (Exist)
+                {
+                    ViewBag.Message = "Actualmente existe un ciudadano que contiene el mismo numero de identidad.";
+                    return View("Form", citizen);
+                }
                  var newCitizen = await _citizenServices.InsertCitizenAsync(citizen);
                 if (newCitizen != null)
                 {

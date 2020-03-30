@@ -45,12 +45,18 @@ namespace Sistema_de_votacion.Services.Citizens
 
         public async Task<Citizen> InsertCitizenAsync(Citizen citizen)
         {
+            citizen.IsActive = true;
             return await Task.FromResult( _citizenRepository.Insert(citizen) );
         }
 
         public async Task<Citizen> UdateCitizenAsync(Citizen citizen)
         {
             return await Task.FromResult( _citizenRepository.Update(citizen) );
+        }
+
+        public async  Task<bool> VerifyExist(string DNI)
+        {
+           return  await Task.FromResult( _citizenRepository.GetAll().Any(c => c.Dni == DNI && c.IsActive == true));
         }
     }
 }
