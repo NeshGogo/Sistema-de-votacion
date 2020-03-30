@@ -6,15 +6,7 @@
 }
 
 <h1 class="display-4 text-center">Listado de Elecciones.</h1>
-@if (@ViewBag.Message != null)
-{
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Advertencia!</strong> @ViewBag.Message
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-}
+
 <p>
     <a asp-action="Create" class="btn btn-outline-success pointer-event @EleccionActiva">Añadir nuevo</a>
 </p>
@@ -22,15 +14,6 @@
 {
     <div class="alert alert-info alert-dismissible fade show" role="alert">
         <strong>Advertencia!</strong> No existe ninguna eleccion registrada.
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-}
-@if (@ViewBag.Message != null)
-{
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Advertencia!</strong> @ViewBag.Message
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>

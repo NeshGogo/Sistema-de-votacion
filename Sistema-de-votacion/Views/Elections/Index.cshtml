@@ -5,15 +5,7 @@
 }
 <h1 class="display-4 text-center">Bienvenido Ciudadano.</h1>
 <p class="text-black-50 text-center">Sistema de Votacion - @DateTime.Now.Year</p>
-@if (ViewBag.Message != null)
-{
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Advertencia!</strong> @ViewBag.Message
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-}
+
 
 <form asp-action="Index" method="post" style="margin-top:5%">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>

@@ -4,15 +4,7 @@
 }
 <h4 class="display-4 text-center">Iniciar un proceso de eleccion.</h4>
 <hr />
-@if (@ViewBag.Message != null)
-{
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Advertencia!</strong> @ViewBag.Message
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-}
+
 <form asp-action="Create" class="mt-5">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="col-md-5">
