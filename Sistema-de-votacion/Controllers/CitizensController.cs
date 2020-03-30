@@ -84,9 +84,8 @@ namespace Sistema_de_votacion.Controllers
         public async Task<IActionResult> Create([Bind("Id,Dni,Name,LastName,Email,IsActive")] Citizen citizen)
         {
             if (ModelState.IsValid)
-            {
-                bool Exist = await _citizenServices.VerifyExist(citizen.Dni);
-                if (Exist)
+            {               
+                if (await _citizenServices.VerifyExistAsync(citizen.Dni))
                 {
                     ViewBag.Message = "Actualmente existe un ciudadano que contiene el mismo numero de identidad.";
                     return View("Form", citizen);
@@ -138,6 +137,11 @@ namespace Sistema_de_votacion.Controllers
             {
                 try
                 {
+                    if (await _citizenServices.VerifyExistAsync(citizen.Dni))
+                    {
+                        ViewBag.Message = "Actualmente existe un ciudadano que contiene el mismo numero de identidad.";
+                        return View("Form", citizen);
+                    }
                     await _citizenServices.UdateCitizenAsync(citizen);
                    
                 }

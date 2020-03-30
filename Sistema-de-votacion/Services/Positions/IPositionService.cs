@@ -15,5 +15,6 @@ namespace Sistema_de_votacion.Services.Candidates.Positions
         Task<Position> UdatePositionAsync(Position position);
         Task<Position> DeletePositionAsync(Position position);
         Task<IEnumerable<Position>> GetPositionsByConditionAsync(Expression<Func<Position, bool>> predicate);
+        Task<bool> VerifyExistAsync(string name);
     }
 }

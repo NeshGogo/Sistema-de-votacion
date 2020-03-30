@@ -16,6 +16,6 @@ namespace Sistema_de_votacion.Services.Citizens
         Task<Citizen> UdateCitizenAsync(Citizen citizen);
         Task<Citizen> DeleteCitizenAsync(Citizen citizen);
         Task<IQueryable<Citizen>> GetCitizenByConditionAsync(Expression<Func<Citizen, bool>> predicate);
-        Task<bool> VerifyExist(string DNI);
+        Task<bool> VerifyExistAsync(string DNI);
     }
 }

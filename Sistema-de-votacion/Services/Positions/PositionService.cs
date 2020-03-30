@@ -21,6 +21,7 @@ namespace Sistema_de_votacion.Services.Candidates.Positions
         }
         public async Task<Position> InsertPositionAsync(Position position)
         {
+            position.IsActive = true;
             return await Task.FromResult(_positionRepository.Insert(position));
         }
         public async Task<Position> GetPositionByIdAsync(int Id)
@@ -47,6 +48,11 @@ namespace Sistema_de_votacion.Services.Candidates.Positions
         public async  Task<IEnumerable<Position>> GetPositionsByConditionAsync(Expression<Func<Position, bool>> predicate)
         {
             return await Task.FromResult(_positionRepository.GetAll().Where(predicate));
+        }
+
+        public async Task<bool> VerifyExistAsync(string name)
+        {
+            return await Task.FromResult(_positionRepository.GetAll().Any(p => p.IsActive == true && p.Name == name));
         }
     }
 }

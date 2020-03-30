@@ -54,7 +54,7 @@ namespace Sistema_de_votacion.Services.Citizens
             return await Task.FromResult( _citizenRepository.Update(citizen) );
         }
 
-        public async  Task<bool> VerifyExist(string DNI)
+        public async  Task<bool> VerifyExistAsync(string DNI)
         {
            return  await Task.FromResult( _citizenRepository.GetAll().Any(c => c.Dni == DNI && c.IsActive == true));
         }

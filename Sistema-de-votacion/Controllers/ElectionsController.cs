@@ -65,7 +65,7 @@ namespace Sistema_de_votacion.Controllers
             {
                 
                
-                if (await _citizenService.VerifyExist(votationLoginViewModel.DNI) == false)
+                if (await _citizenService.VerifyExistAsync(votationLoginViewModel.DNI) == false)
                 {
                     ViewBag.Message = "EL ciudadano no existe o esta inactivo.";
                     return View(votationLoginViewModel);

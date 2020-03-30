@@ -83,7 +83,11 @@ namespace Sistema_de_votacion.Controllers
         {
             if (ModelState.IsValid)
             {
-                position.IsActive = true;
+                if (await _positionService.VerifyExistAsync(position.Name))
+                {
+                    ViewBag.Message = "No es posible añadir la posicion porque actualmente existe un posicion politica activa que contiene el mismo nombre.";
+                    return View("Form", position);
+                }
                 await  _positionService.InsertPositionAsync(position);
                
                 return RedirectToAction(nameof(Index));
@@ -119,7 +123,12 @@ namespace Sistema_de_votacion.Controllers
             if (ModelState.IsValid)
             {
                 try
-                {                    
+                {
+                    if (await _positionService.VerifyExistAsync(position.Name))
+                    {
+                        ViewBag.Message = "No es posible añadir la posicion porque actualmente existe un posicion politica activa que contiene el mismo nombre.";
+                        return View("Form", position);
+                    }
                     await _positionService.UdatePositionAsync(position);
                     
                 }
