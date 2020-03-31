@@ -72,12 +72,12 @@ namespace Sistema_de_votacion.Controllers
                     ViewBag.Message = "EL ciudadano no existe o esta inactivo.";
                     return View(votationLoginViewModel);
                 }
-                ;
-                /*if (await _electionService.VerifyElectionOpenAsync() == false)
+                
+                if (await _electionService.VerifyElectionOpenAsync() == false)
                 {
                     ViewBag.Message = "No hay ningun proceso electoral en estos momentos.";
                     return View(votationLoginViewModel);
-                }*/
+                }
                 var citizen = await _citizenService.GetCitizenByConditionAsync(c => c.Dni == votationLoginViewModel.DNI).Result.FirstOrDefaultAsync();
                 if ( await _electionService.VerifyCitizenVoteAsync(citizen.Id))
                 {
@@ -243,7 +243,7 @@ namespace Sistema_de_votacion.Controllers
             
             var candidates = await _candidateService.GetCandidates().Where(c => c.IsActive == true).Include(c=> c.Position).Include(c=> c.PoliticParty).OrderBy(c=>c.Position.Name).ToListAsync();
             var candidateElection = _mapper.Map<List<Candidate>, List<CandidateElectionViewModel>>(candidates);
-            ElectionCreateViewModel electionCreateViewModel = new ElectionCreateViewModel { ElectionCadidate = candidateElection };
+            ElectionCreateViewModel electionCreateViewModel = new ElectionCreateViewModel { ElectionCadidate = candidateElection.GroupBy( c => c.Position.Name).ToList() };
             return View(electionCreateViewModel);
         }
         [Authorize]
@@ -262,7 +262,7 @@ namespace Sistema_de_votacion.Controllers
                 {
                     ViewBag.Message = "Debe seleccionar candidatos para 4 posiciones electorales diferentes para poder iniciar un proceso electoral.";
                     var allcandidates = await _candidateService.GetCandidates().Where(c => c.IsActive == true).Include(c => c.Position).Include(c => c.PoliticParty).OrderBy(c => c.Position.Name).ToListAsync();
-                    electionViewModel.ElectionCadidate = _mapper.Map<List<Candidate>, List<CandidateElectionViewModel>>(allcandidates);
+                    electionViewModel.ElectionCadidate = (_mapper.Map<List<Candidate>, List<CandidateElectionViewModel>>(allcandidates) ).GroupBy(c => c.Position.Name).ToList();
                     return View(electionViewModel);
                 }
 
@@ -272,7 +272,7 @@ namespace Sistema_de_votacion.Controllers
                 {
                     ViewBag.Message = "Debe seleccionar almenos 2 candidatos por posicion electoral para poder iniciar un proceso electoral.";
                     var allcandidates = await _candidateService.GetCandidates().Where(c => c.IsActive == true).Include(c => c.Position).Include(c => c.PoliticParty).OrderBy(c => c.Position.Name).ToListAsync();
-                    electionViewModel.ElectionCadidate = _mapper.Map<List<Candidate>, List<CandidateElectionViewModel>>(allcandidates);
+                    electionViewModel.ElectionCadidate =( _mapper.Map<List<Candidate>, List<CandidateElectionViewModel>>(allcandidates) ).GroupBy(c => c.Position.Name).ToList();
                     return View(electionViewModel);
                 }
                 

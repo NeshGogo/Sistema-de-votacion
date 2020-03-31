@@ -29,7 +29,7 @@ namespace Sistema_de_votacion.ViewModels
         [Display(Name = "Esta Activo")]
         public bool IsActive { get; set; }
 
-        [Display(Name ="Seleccionado")]
+        [Display(Name ="Seleccionar")]
         public bool Selected { get; set; }
         public virtual PoliticParty PoliticParty { get; set; }
         public virtual Position Position { get; set; }

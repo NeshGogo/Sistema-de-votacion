@@ -15,58 +15,56 @@
         </div>
     </div>
 
-    <h3 class="text-center mt-5 mb-3">Seleccione los candidatos.</h3>
+    <h2 class="text-center mt-5 mb-3">Seleccione los candidatos.</h2>
 
     <div>
-        <table class="table table-striped table-hover table-bordered text-center">
-            <thead class="thead-dark">
-                <tr>
-                    <th hidden>
-                        ID
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.ElectionCadidate.FirstOrDefault().Name) y
-                        @Html.DisplayNameFor(model => model.ElectionCadidate.FirstOrDefault().LastName)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.ElectionCadidate.FirstOrDefault().PoliticPartyId)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.ElectionCadidate.FirstOrDefault().PositionId)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.ElectionCadidate.FirstOrDefault().Selected)
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.ElectionCadidate)
-                {
+        @foreach (var groupElectionCandidate in Model.ElectionCadidate)
+        {
+            <h4>Posicion: <span class="text-black-50">@groupElectionCandidate.Key</span></h4>
+            <table class="table table-striped table-hover table-bordered text-center">
+                <thead class="thead-dark">
                     <tr>
-                        <td hidden>
-                            @Html.DisplayFor(modelItem => item.Id)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Name)
-                            @Html.DisplayFor(modelItem => item.LastName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.PoliticParty.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Position.Name)
-                        </td>
-                        <td>
-                            <label class="form-group form-check">
-
-                                @Html.CheckBoxFor(model => item.Selected, new { @id = "Candidates" })
-                            </label>
-                        </td>
-
+                        <th hidden>
+                            ID
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => groupElectionCandidate.First().Name) y
+                            @Html.DisplayNameFor(model => groupElectionCandidate.First().LastName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => groupElectionCandidate.First().PoliticPartyId)
+                        </th>                        
+                        <th>
+                            @Html.DisplayNameFor(model => groupElectionCandidate.First().Selected)
+                        </th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var candidate in groupElectionCandidate)
+                    {
+
+                        <tr>
+                            <td hidden>
+                                @Html.DisplayFor(modelItem => candidate.Id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => candidate.Name)
+                                @Html.DisplayFor(modelItem => candidate.LastName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => candidate.PoliticParty.Name)
+                            </td>
+                            <td>
+                                <label class="form-group form-check">
+                                    @Html.CheckBoxFor(model => candidate.Selected, new { @id = "Candidates" })
+                                </label>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+         }
+
     </div>
     <div class="form-group text-center">
         <input type="submit" value="Iniciar" class="btn btn-primary" />

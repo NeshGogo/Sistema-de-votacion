@@ -13,7 +13,7 @@ namespace Sistema_de_votacion.ViewModels
         public string Name { get; set; }
 
         [Display(Name = "Candidatos")]
-        public  List<CandidateElectionViewModel> ElectionCadidate { get; set; }
+        public  List<IGrouping<string,CandidateElectionViewModel>> ElectionCadidate { get; set; }
 
 
 
