@@ -1,38 +1,24 @@
-﻿@model Sistema_de_votacion.ViewModels.ElectionVotationViewModel
-@{ 
-    List<Election> election = ViewBag.Election;
-    
+﻿@model Election
+@{
+    ViewData["Title"] = "Votation";
 }
 
+<h1>Bienvenido.</h1>
+<h3>Ejerza su derecho al voto.</h3>
 
-    <h4>Listado de Candidatos para @Model.Position.Name</h4>
-
-    <form asp-action="Votation" method="post">
-        <div>
-
-            <input type="hidden" asp-for="PositionIndex" />
-            <input type="hidden" asp-for="ElectionId" />
-            <input type="hidden" asp-for="CitizenId" />
-
+<div>
+    @foreach (var electionPosition in Model.ElectionPosition)
+    {
+        <div class="card" style="width: 18rem;">
+            <img src="~/Images/Anonimo.jpg" class="card-img-top" alt="Imagen de icono anonimo">
+            <div class="card-body">
+                <p class="card-text">Pulse el boton para pasar a la pantalla de seleccion de candidatos.</p>
+                <a class="btn btn-primary" href="@Url.Action("Candidate", electionPosition.Position)" > Candidatos</a>
+            </div>
         </div>
-        <div class="card-deck">
+        }
 
-            @foreach (var candidate in Model.Candidates)
-            {
-                var photoPath = "~/images/" + (candidate.ProfilePhothoPath ?? "Anonimo.jpg");
-                <div class="card m-3" style="min-width:14rem; max-width:24.5%">
-                    <div class="card-header text-center">
-                        <h6>@(candidate.Name + " " + candidate.LastName)</h6>
-                        <h6>@candidate.PoliticParty.Name</h6>
-                        <h6>@candidate.Position.Name</h6>
-                    </div>
-                    <img class="card-img-top imageThumbnail" src="@photoPath" asp-append-version="true" />
-                    <div class="card-footer text-center">                       
-                        <button asp-action="Votation" type="submit" asp-controller="Elections" asp-route-candidateId="@candidate.Id" class="btn btn-primary btn-sm" style="width:auto">Votar</button>                
 
-                    </div>
-                </div>
-            }
+    </div>
 
-        </div>
-    </form>
+

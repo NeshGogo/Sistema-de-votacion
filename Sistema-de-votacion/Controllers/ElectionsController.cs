@@ -36,8 +36,10 @@ namespace Sistema_de_votacion.Controllers
         private readonly Sistema_de_votacion.Mail.IEmailSender _emailSender;
         private  int _positionQty;
 
-        public ElectionsController(IElectionService electionService, IPositionService positionService, ICandidateService candidateService, 
-                                    IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper, IResultRepository resultRepository, IElectionCitizenRepository electionCitizenRepository, Sistema_de_votacion.Mail.IEmailSender emailSender)
+        public ElectionsController( IElectionService electionService, IPositionService positionService, ICandidateService candidateService, 
+                                    IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper,
+                                    IResultRepository resultRepository, IElectionCitizenRepository electionCitizenRepository,
+                                    Sistema_de_votacion.Mail.IEmailSender emailSender)
         {
             _electionService = electionService;
             _positionService = positionService;
@@ -71,11 +73,11 @@ namespace Sistema_de_votacion.Controllers
                     return View(votationLoginViewModel);
                 }
                 ;
-                if (await _electionService.VerifyElectionOpenAsync() == false)
+                /*if (await _electionService.VerifyElectionOpenAsync() == false)
                 {
                     ViewBag.Message = "No hay ningun proceso electoral en estos momentos.";
                     return View(votationLoginViewModel);
-                }
+                }*/
                 var citizen = await _citizenService.GetCitizenByConditionAsync(c => c.Dni == votationLoginViewModel.DNI).Result.FirstOrDefaultAsync();
                 if ( await _electionService.VerifyCitizenVoteAsync(citizen.Id))
                 {
@@ -87,15 +89,22 @@ namespace Sistema_de_votacion.Controllers
                 
             }
 
-
             return View(votationLoginViewModel);
         }
+        public async Task<IActionResult> Votation()
+        {
+            var election = await _electionService.GetElectionByConditionAsync(e => e.IsActive == true).Result.Include(e => e.ElectionPosition).ThenInclude(ep => ep.Position).FirstOrDefaultAsync();
+           
+            
+            return View(election);
+        }
+
         [HttpGet]
-        public async Task<IActionResult> Votation(Citizen citizen, ElectionVotationViewModel model)
+        public async Task<IActionResult> Candidate(Citizen citizen, ElectionVotationViewModel model)
         {
             _positionQty = (await _positionService.GetPositionsAsync()).Count();
             var politicParties = _politicPartyService.GetPoliticParties().ToList();
-            var election = (await _electionService.GetElectionsAsync()).Where(e=> e.IsActive == true).Include(e => e.ElectionCadidate).ThenInclude(ec => ec.Candidate).ThenInclude(c=> c.Position).FirstOrDefault();
+            var election = await _electionService.GetElectionsAsync().Result.Where(e=> e.IsActive == true).Include(e => e.ElectionCadidate).ThenInclude(ec => ec.Candidate).ThenInclude(c=> c.Position).FirstOrDefaultAsync();
 
 
                 foreach (var cadidateElection in election.ElectionCadidate)
@@ -127,7 +136,7 @@ namespace Sistema_de_votacion.Controllers
             
         }
         [HttpPost]
-        public async Task<IActionResult> Votation(ElectionVotationViewModel model, int candidateId)
+        public async Task<IActionResult> Candidate(ElectionVotationViewModel model, int candidateId)
         {
             Result result = new Result()
             {
@@ -247,7 +256,7 @@ namespace Sistema_de_votacion.Controllers
             if (ModelState.IsValid)
             {
                 var candidatesSelected = await _candidateService.GetCandidates().Include(c => c.Position).Where(c => candidatesSelectedId.Contains(c.Id.ToString())).ToListAsync();
-                var postitionSelected = candidatesSelected.Select(c => c.Position.Name).Distinct();
+                var postitionSelected = candidatesSelected.Select(c => c.Position).Distinct().ToList();
 
                 if (postitionSelected.Count() < 4)
                 {
@@ -266,12 +275,14 @@ namespace Sistema_de_votacion.Controllers
                     electionViewModel.ElectionCadidate = _mapper.Map<List<Candidate>, List<CandidateElectionViewModel>>(allcandidates);
                     return View(electionViewModel);
                 }
-
+                
                 Election election = _mapper.Map<ElectionCreateViewModel, Election>(electionViewModel);
-                Election result = await _electionService.InsertElectionAsync(election, candidatesSelected);
+                Election result = await _electionService.InsertElectionAsync(election, candidatesSelected, postitionSelected);
 
                 if (result!=null)
                 {
+                    
+                    
                     return RedirectToAction(nameof(ElectionsList));
                 }
                 ModelState.AddModelError("", "Ocurrion un erro al insertar la eleccion.");

@@ -9,7 +9,7 @@ namespace Sistema_de_votacion.Services.Elections
 {
     public interface IElectionService
     {
-        Task<Election> InsertElectionAsync(Election election, List<Candidate> ElectionCandidates);
+        Task<Election> InsertElectionAsync(Election election, List<Candidate> electionCandidates, List<Position> electionPostion);
         Task<IQueryable<Election>> GetElectionsAsync();
         Task<Election> GetElectionByIdAsync(int? id);
         Task<Election> UpdateElectionAsync(Election election);
@@ -17,5 +17,6 @@ namespace Sistema_de_votacion.Services.Elections
         Task<bool> VerifyCitizenVoteAsync(int CitizenId);
         Task<bool> VerifyElectionOpenAsync();
         Task<List<Result>> GetElectionResultsByIdAsync(int electionId);
+        Task<IQueryable<Election>> GetElectionByConditionAsync(Expression<Func<Election, bool>> predicate);
     }
 }

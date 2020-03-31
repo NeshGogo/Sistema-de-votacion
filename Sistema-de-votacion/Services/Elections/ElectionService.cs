@@ -56,16 +56,17 @@ namespace Sistema_de_votacion.Services.Elections
             return await Task.FromResult(_electionRepository.GetAll());
         }
 
-        public async Task<Election> InsertElectionAsync(Election election, List<Candidate> electionCandidates)
+        public async Task<Election> InsertElectionAsync(Election election, List<Candidate> electionCandidates, List<Position> electionPosition )
         {
             election.Date = DateTime.UtcNow;
             election.IsActive = true;
             Election result = await Task.FromResult(_electionRepository.Insert(election));
             if (result != null)
             {
-                List<ElectionCadidate> cadidates = electionCandidates.Select(e => new ElectionCadidate { CandidateId = e.Id, ElectionId = result.Id }).ToList();                
-
+                List<ElectionCadidate> cadidates = electionCandidates.Select(e => new ElectionCadidate { CandidateId = e.Id, ElectionId = result.Id }).ToList();
+                List<ElectionPosition> postions = electionPosition.Select(p => new ElectionPosition { PositionId = p.Id, ElectionId = result.Id }).ToList();
                 _electionCandidateRepository.Insert(cadidates);
+                _electionPositionRepository.Insert(postions);
             }
             return result;
         }
@@ -85,6 +86,11 @@ namespace Sistema_de_votacion.Services.Elections
         public async Task<bool> VerifyElectionOpenAsync()
         { 
             return await Task.FromResult(_electionRepository.GetAll().Any(e => e.IsActive == true));
+        }
+
+        public async Task<IQueryable<Election>> GetElectionByConditionAsync(Expression<Func<Election, bool>> predicate)
+        {
+            return await Task.FromResult(_electionRepository.GetAll().Where(predicate));
         }
     }
 }
