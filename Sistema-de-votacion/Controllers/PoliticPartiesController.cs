@@ -68,6 +68,8 @@ namespace Sistema_de_votacion.Controllers
             if (ModelState.IsValid)
             {
                 string uniqueFileName = ProcessUploadedFile(model);
+                if (uniqueFileName == null)
+                    uniqueFileName = "PartidoNull.png";
                 PoliticParty politicParty = new PoliticParty
                 {
                     Name = model.Name,
