@@ -3,15 +3,21 @@
     ViewData["Title"] = "Votation";
 }
 
-<h1>Bienvenido.</h1>
-<h3>Ejerza su derecho al voto.</h3>
+    <div class="text-center mb-5">
+        <h1 class="display-4">Bienvenido.</h1>
+        <h5 class="text-black-50">Ejerza su derecho al voto.</h5>
+    </div>
 
-<div>
+
+<div class="d-flex justify-content-around flex-wrap">
     @foreach (var electionPosition in Model.ElectionPosition)
     {
-        <div class="card" style="width: 18rem;">
+        <div class="card m-3" style="width: 20rem;">
+            <div class="card-header text-center">
+                <h4>@electionPosition.Position.Name</h4>
+            </div>
             <img src="~/Images/Anonimo.jpg" class="card-img-top" alt="Imagen de icono anonimo">
-            <div class="card-body">
+            <div class="card-body text-center">
                 <p class="card-text">Pulse el boton para pasar a la pantalla de seleccion de candidatos.</p>
                 <a class="btn btn-primary" href="@Url.Action("Candidate", electionPosition.Position)" > Candidatos</a>
             </div>
