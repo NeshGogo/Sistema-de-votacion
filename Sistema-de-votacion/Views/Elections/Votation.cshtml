@@ -1,6 +1,7 @@
-﻿@model Election
+﻿@model ElectionVotationViewModel
 @{
     ViewData["Title"] = "Votation";
+    Layout = "~/Views/Shared/_LayoutVotation.cshtml";
 }
 
     <div class="text-center mb-5">
@@ -10,16 +11,16 @@
 
 
 <div class="d-flex justify-content-around flex-wrap">
-    @foreach (var electionPosition in Model.ElectionPosition)
+    @foreach (var position in Model.Postions)
     {
         <div class="card m-3" style="width: 20rem;">
             <div class="card-header text-center">
-                <h4>@electionPosition.Position.Name</h4>
+                <h4>@position.Name</h4>
             </div>
             <img src="~/Images/Anonimo.jpg" class="card-img-top" alt="Imagen de icono anonimo">
             <div class="card-body text-center">
-                <p class="card-text">Pulse el boton para pasar a la pantalla de seleccion de candidatos.</p>
-                <a class="btn btn-primary" href="@Url.Action("Candidate", electionPosition.Position)" > Candidatos</a>
+                <p class="card-text text-black-50">Pulse el boton para seleccionar el candidato.</p>
+                <a class="btn btn-primary" href="@Url.Action("Candidate", position)" > Candidatos</a>
             </div>
         </div>
         }

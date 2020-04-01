@@ -1,19 +1,18 @@
-﻿@model Sistema_de_votacion.ViewModels.ElectionVotationViewModel
+﻿@model ElectionVotationViewModel
 @{ 
-    List<Election> election = ViewBag.Election;
+   Layout = "~/Views/Shared/_LayoutVotation.cshtml";
     
 }
 
 
-    <h4>Listado de Candidatos para @Model.Position.Name</h4>
+    <h4>Listado de Candidatos para la Posicion de @Model.CurrentPosition</h4>
 
-    <form asp-action="Votation" method="post">
+    <form asp-action="Candidate" method="post">
+
         <div>
-
-            <input type="hidden" asp-for="PositionIndex" />
-            <input type="hidden" asp-for="ElectionId" />
-            <input type="hidden" asp-for="CitizenId" />
-
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Name" value="@Model.Name" />
+            <input type="hidden" asp-for="CurrentPosition" />
         </div>
         <div class="card-deck">
 
@@ -28,7 +27,8 @@
                     </div>
                     <img class="card-img-top imageThumbnail" src="@photoPath" asp-append-version="true" />
                     <div class="card-footer text-center">                       
-                        <button asp-action="Votation" type="submit" asp-controller="Elections" asp-route-candidateId="@candidate.Id" class="btn btn-primary btn-sm" style="width:auto">Votar</button>                
+                        <button type="submit" asp-controller="Elections" asp-route-candidateId="@candidate.Id"
+                            class="btn btn-primary btn-sm" style="width:auto">Votar</button>
 
                     </div>
                 </div>

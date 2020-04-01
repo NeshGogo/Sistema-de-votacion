@@ -14,9 +14,11 @@ namespace Sistema_de_votacion.Services.Elections
         Task<Election> GetElectionByIdAsync(int? id);
         Task<Election> UpdateElectionAsync(Election election);
         Task<Election> DeleteElectionAsync(Election election);
-        Task<bool> VerifyCitizenVoteAsync(int CitizenId);
+        Task<bool> VerifyCitizenVoteAsync(string CitizenDNI);
         Task<bool> VerifyElectionOpenAsync();
         Task<List<Result>> GetElectionResultsByIdAsync(int electionId);
         Task<IQueryable<Election>> GetElectionByConditionAsync(Expression<Func<Election, bool>> predicate);
+        Task<IEnumerable<Result>> InsertElectionResulAsync(IEnumerable<Result> results);
+        Task<ElectionCitizen> InsertElectionCitizenVote(ElectionCitizen electionCitizen);
     }
 }

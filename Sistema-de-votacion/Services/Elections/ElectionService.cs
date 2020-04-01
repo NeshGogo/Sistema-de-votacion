@@ -76,10 +76,10 @@ namespace Sistema_de_votacion.Services.Elections
             return await Task.FromResult(_electionRepository.Update(election));
         }
 
-        public async Task<bool> VerifyCitizenVoteAsync(int citizenId)
+        public async Task<bool> VerifyCitizenVoteAsync(string citizenDni)
         {
-           return await Task.FromResult( _electionCitizenRepository.GetAll().Include(e => e.Election).Where(e => e.Election.IsActive == true)
-               .Any(ec => ec.CitizenId == citizenId) );       
+           return await Task.FromResult( _electionCitizenRepository.GetAll().Include(e => e.Election).Where(e => e.Election.IsActive == true).Include( e => e.Citizen)
+               .Any(ec => ec.Citizen.Dni == citizenDni) );       
             
         }
 
@@ -91,6 +91,16 @@ namespace Sistema_de_votacion.Services.Elections
         public async Task<IQueryable<Election>> GetElectionByConditionAsync(Expression<Func<Election, bool>> predicate)
         {
             return await Task.FromResult(_electionRepository.GetAll().Where(predicate));
+        }
+
+        public async  Task<IEnumerable<Result>> InsertElectionResulAsync(IEnumerable<Result> results)
+        {
+            return await Task.FromResult(_resultRepository.Insert(results));
+        }
+
+        public async Task<ElectionCitizen> InsertElectionCitizenVote(ElectionCitizen electionCitizen)
+        {
+            return await Task.FromResult(_electionCitizenRepository.Insert(electionCitizen));
         }
     }
 }

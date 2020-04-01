@@ -34,7 +34,6 @@ namespace Sistema_de_votacion.Controllers
         private readonly IResultRepository _resultRepository;
         private readonly IElectionCitizenRepository _electionCitizenRepository;
         private readonly Sistema_de_votacion.Mail.IEmailSender _emailSender;
-        private  int _positionQty;
 
         public ElectionsController( IElectionService electionService, IPositionService positionService, ICandidateService candidateService, 
                                     IPoliticPartyService politicPartyService, ICitizenService citizenService, IMapper mapper,
@@ -79,138 +78,103 @@ namespace Sistema_de_votacion.Controllers
                     return View(votationLoginViewModel);
                 }
                 var citizen = await _citizenService.GetCitizenByConditionAsync(c => c.Dni == votationLoginViewModel.DNI).Result.FirstOrDefaultAsync();
-                if ( await _electionService.VerifyCitizenVoteAsync(citizen.Id))
-                {
-                    ViewBag.Message = "Usted ya ejercion su derecho al voto.";
-                    return View(votationLoginViewModel);
-                }
-
-                return RedirectToAction("Votation", citizen); 
+                /* if ( await _electionService.VerifyCitizenVoteAsync(citizen.Id))
+                 {
+                     ViewBag.Message = "Usted ya ejercion su derecho al voto.";
+                     return View(votationLoginViewModel);
+                 }*/
+                HttpContext.Session.SetInt32(Configuration.Ciudadano, citizen.Id);
+                return RedirectToAction("Votation"); 
                 
             }
 
             return View(votationLoginViewModel);
         }
-        public async Task<IActionResult> Votation()
+        public async Task<IActionResult> Votation(ElectionVotationViewModel electionVotationViewModel)
         {
-            var election = await _electionService.GetElectionByConditionAsync(e => e.IsActive == true).Result.Include(e => e.ElectionPosition).ThenInclude(ep => ep.Position).FirstOrDefaultAsync();
-           
-            
-            return View(election);
+            if (HttpContext.Session.Get(Configuration.Ciudadano) != null)
+            {
+                if (electionVotationViewModel.Id == 0)
+                {
+                    var election = await _electionService.GetElectionByConditionAsync(e => e.IsActive == true).Result.Include(e => e.ElectionPosition).ThenInclude(ep => ep.Position).FirstOrDefaultAsync();
+                    electionVotationViewModel.Id = election.Id;
+                    electionVotationViewModel.Name = election.Name;
+                    electionVotationViewModel.Postions = election.ElectionPosition.Select(ep => ep.Position).ToList();
+                }   
+                
+                return View(electionVotationViewModel);
+            }
+            return RedirectToAction(nameof(Index));            
         }
 
         [HttpGet]
-        public async Task<IActionResult> Candidate(Citizen citizen, ElectionVotationViewModel model)
+        public async Task<IActionResult> Candidate(Position position)
         {
-            _positionQty = (await _positionService.GetPositionsAsync()).Count();
-            var politicParties = _politicPartyService.GetPoliticParties().ToList();
-            var election = await _electionService.GetElectionsAsync().Result.Where(e=> e.IsActive == true).Include(e => e.ElectionCadidate).ThenInclude(ec => ec.Candidate).ThenInclude(c=> c.Position).FirstOrDefaultAsync();
+            var election = await _electionService.GetElectionsAsync().Result.Where(e=> e.IsActive == true).Include(e => e.ElectionCadidate)
+                .ThenInclude(ec => ec.Candidate).ThenInclude(c=> c.PoliticParty).Include( e => e.ElectionPosition).ThenInclude( ep => ep.Position).FirstOrDefaultAsync();
 
-
-                foreach (var cadidateElection in election.ElectionCadidate)
-                {
-                    PoliticParty politicParty = _politicPartyService.GetPoliticPartyById(cadidateElection.Candidate.PoliticPartyId);
-                    cadidateElection.Candidate.PoliticParty = politicParty;
-                }
-                   
-
-
-
-            ViewBag.Election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive).Include(p => p.ElectionPosition).Include(c => c.ElectionCitizen).ToList();
-            if(model.ElectionId == 0 )
+            ElectionVotationViewModel electionCandidateViewModel = new ElectionVotationViewModel
             {
-                model = _mapper.Map<Election, ElectionVotationViewModel>(election);
-                model.PositionIndex = model.PositionIndex;
-                model.CitizenId = citizen.Id;
-            }           
+                Id = election.Id,
+                Name = election.Name,
+                CurrentPosition = position.Name,
+                Candidates = election.ElectionCadidate.Select(ec => ec.Candidate).Where(c => c.PositionId == position.Id).ToList(),
+                Postions = election.ElectionPosition.Select(ep => ep.Position).ToList()
+            };
 
-            
-            
-            var positions = election.ElectionCadidate.Select(ce => ce.Candidate).Select(c => c.Position).Where(p => p.IsActive == true).Distinct();
-            model.Position = positions.ElementAt(model.PositionIndex);
-            model.Candidates = election.ElectionCadidate.Select(ec => ec.Candidate).Where(c=> c.Position == model.Position).ToList();
-            
-     
-
-            return View(model);
+            return View(electionCandidateViewModel);
             
         }
         [HttpPost]
         public async Task<IActionResult> Candidate(ElectionVotationViewModel model, int candidateId)
         {
-            Result result = new Result()
+            int postionVoted = 0;
+            int? citizenId = HttpContext.Session.GetInt32(Configuration.Ciudadano);
+            if (!citizenId.HasValue)
             {
-                ElectionId = model.ElectionId,
-                CandidateId=candidateId,
-                CitizenId=model.CitizenId
-            };
-            ElectionCitizen elctionCitizen = new ElectionCitizen()
+                return RedirectToAction(nameof(Index));
+            }
+
+            HttpContext.Session.SetInt32(model.Name, candidateId);
+
+            model.Postions = (await _electionService.GetElectionByConditionAsync(e => e.IsActive == true).Result
+                .Include(e => e.ElectionPosition).ThenInclude(ep => ep.Position).FirstOrDefaultAsync())
+                .ElectionPosition.Select(ep => ep.Position).ToList();
+
+            model.Postions.ForEach(p =>
             {
-                ElectionId=model.ElectionId,
-                CitizenId=model.CitizenId
-            };
+               if (HttpContext.Session.GetInt32(p.Name).HasValue)
+                   postionVoted++;
 
-            _electionCitizenRepository.Insert(elctionCitizen);
-            _resultRepository.Insert(result);
-            var candidate = _candidateService.GetCandidateById(candidateId);
+            });
 
+            if (postionVoted != model.Postions.Count())            
+                return RedirectToAction("Votation", model);
             
-
-            if (candidate.Position.Name.Contains("Presidente"))
+            List<Result> results = new List<Result>();
+            string content = "Usted ha votado por los siguientes candidatos:";
+            model.Postions.ForEach(p =>
             {
-                HttpContext.Session.SetString(Configuration.Presidente, candidate.Name + " " + candidate.LastName);
-       
-            }
-            else if(candidate.Position.Name.Contains("Alcalde"))
-            {
-                HttpContext.Session.SetString(Configuration.Alcalde, candidate.Name + " " + candidate.LastName);
-            }
-            else if (candidate.Position.Name.Contains("Regidor"))
-            {
-                HttpContext.Session.SetString(Configuration.Regidor, candidate.Name + " " + candidate.LastName);
-            }
-            else if (candidate.Position.Name.Contains("Senador"))
-            {
-                HttpContext.Session.SetString(Configuration.Senador, candidate.Name + " " + candidate.LastName);
-            }
-            var politicParties = _politicPartyService.GetPoliticParties().ToList();
-            var election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive == true).Include(e => e.ElectionCadidate).ThenInclude(ec => ec.Candidate).ThenInclude(c => c.Position).FirstOrDefault();
+                Result result = new Result()
+                {
+                    ElectionId = model.Id,
+                    CandidateId = HttpContext.Session.GetInt32(p.Name).Value,
+                    CitizenId = citizenId.Value
+                };                
+                Candidate candidate = _candidateService.GetCandidateById(HttpContext.Session.GetInt32(p.Name));
+                content += $"\n {p.Name}: {candidate.Name}";
+                results.Add(result);
+            });         
 
-            
-            foreach (var cadidateElection in election.ElectionCadidate)
-            {
-                PoliticParty politicParty = _politicPartyService.GetPoliticPartyById(cadidateElection.Candidate.PoliticPartyId);
-                cadidateElection.Candidate.PoliticParty = politicParty;
-            }
-            
-            ViewBag.Election = (await _electionService.GetElectionsAsync()).Where(e => e.IsActive).Include(p => p.ElectionPosition).Include(c => c.ElectionCitizen).ToList();
+            await _electionService.InsertElectionCitizenVote(new ElectionCitizen() { ElectionId = model.Id, CitizenId = citizenId.Value });
+            await _electionService.InsertElectionResulAsync(results);
 
-            
-     
-            model.PositionIndex = model.PositionIndex + 1;
-            
-            var positions = election.ElectionCadidate.Select(ce => ce.Candidate).Select(c => c.Position).Where(p => p.IsActive == true).Distinct();
+            var message = new Sistema_de_votacion.Mail.Message(new string[] { "sistemadesarrolloeleccion@gmail.com" }, "RESULTADO DE VOTACION", content );
+            await _emailSender.SendEmailAsync(message);
 
-            if (model.PositionIndex == positions.Count())
-            {
-
-                var message = new Sistema_de_votacion.Mail.Message(new string[] { "sistemadesarrolloeleccion@gmail.com" } , "RESULTADO DE VOTACION", 
-                    "Usted ha votado por los siguientes candidatos: \nPRESIDENTE:"+ HttpContext.Session.GetString(Configuration.Presidente)+
-                                                                    "\nALCALDE:"+ HttpContext.Session.GetString(Configuration.Alcalde) +
-                                                                    "\nREGIDOR:" + HttpContext.Session.GetString(Configuration.Regidor) +
-                                                                    "\nSENADOR:" + HttpContext.Session.GetString(Configuration.Senador));
-
-                await _emailSender.SendEmailAsync(message);
-
-                
-
-                return RedirectToAction("Index", "Elections", model);
-
-            }
-            return RedirectToAction("Votation", "Elections", model);
-
-            //return View();
+            return RedirectToAction("Index", "Elections", model);       
         }
+
         [Authorize]
         // GET: Elections/Details/5
         public async Task<IActionResult> Details(int? id)
