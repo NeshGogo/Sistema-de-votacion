@@ -81,7 +81,7 @@ namespace Sistema_de_votacion.Controllers
             {
                 string uniqueFileName = ProcessUploadedFile(model);
                 if (uniqueFileName == null)
-                    uniqueFileName = "Anonimo.jpg";
+                    uniqueFileName = "Anonimo.png";
                 Candidate candidate = new Candidate
                 {
                     Name = model.Name,

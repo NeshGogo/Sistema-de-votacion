@@ -1,12 +1,12 @@
 ﻿@model ElectionVotationViewModel
 @{ 
    Layout = "~/Views/Shared/_LayoutVotation.cshtml";
-    
+   string photoPath = "/images/";
 }
 
 
-    <h4>Listado de Candidatos para la Posicion de @Model.CurrentPositionName</h4>
-
+    <h4 class="display-4 text-center">Candidatos para @Model.CurrentPositionName.</h4>
+    <hr />
     <form asp-action="Candidate" method="post">
 
         <div>
@@ -15,18 +15,20 @@
             <input type="hidden" asp-for="CurrentPositionName" />
             <input type="hidden" asp-for="CurrentPositionId" />
         </div>
-        <div class="card-deck">
+        <div class="d-flex justify-content-around flex-wrap">
 
             @foreach (var candidate in Model.Candidates)
             {
-                var photoPath = "~/images/" + (candidate.ProfilePhothoPath ?? "Anonimo.jpg");
-                <div class="card m-3" style="min-width:14rem; max-width:24.5%">
+                <div class="card m-3 shadow-sm"  style="width:15rem;">
                     <div class="card-header text-center">
-                        <h6>@(candidate.Name + " " + candidate.LastName)</h6>
-                        <h6>@candidate.PoliticParty.Name</h6>
-                        <h6>@Model.CurrentPositionName</h6>
+                        <h6 class="card-title">@(candidate.Name + " " + candidate.LastName)</h6>                        
                     </div>
-                    <img class="card-img-top imageThumbnail" src="@photoPath" asp-append-version="true" />
+                    <img class="card-img-top border rounded-circle mt-1" src="@($"{photoPath}{candidate.ProfilePhothoPath}")" 
+                         asp-append-version="true"alt="imagen del candidato." />
+                    <div class="card-body text-center p-1">
+                        <img  width="30" height="30" src="@($"{photoPath}{candidate.PoliticParty.PartyLogoPath}")"  alt="Logo del partido."/>
+                        <p class="mb-0">@candidate.PoliticParty.Name</p>
+                    </div>
                     <div class="card-footer text-center">                       
                         <button type="submit" asp-controller="Elections" asp-route-candidateId="@candidate.Id"
                             class="btn btn-primary btn-sm" style="width:auto">Votar</button>

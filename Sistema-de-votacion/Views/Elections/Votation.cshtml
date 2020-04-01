@@ -17,13 +17,16 @@
 <div class="d-flex justify-content-around flex-wrap">
     @foreach (var position in Model.Postions)
     {
-        <div class="card m-3 bg-light" style="width: 20rem; @(HttpContextAccessor.HttpContext.Session.GetInt32(position.Name).HasValue? "background-color:lightgrey !important":"")">
+        <div class="card m-3 bg-light shadow-sm" style="width: 15rem; @(HttpContextAccessor.HttpContext.Session.GetInt32(position.Name).HasValue? "background-color:lightgrey !important":"")">
             <div class="card-header text-center">
                 <h4>@position.Name</h4>
             </div>
-            <img src="~/Images/Anonimo.jpg" class="card-img-top" alt="Imagen de icono anonimo">
-            <div class="card-body text-center">
+            <img src="~/Images/Anonimo.png" class="card-img-top border-bottom" alt="Imagen de icono anonimo">
+            <div class="card-body text-center p-1">
                 <p class="card-text text-black-50">Pulse el boton para seleccionar el candidato.</p>
+                
+            </div>
+            <div class="card-footer text-center">
                 <form asp-action="Candidate" method="get">
                     <input type="hidden" asp-for="Name" value="@Model.Name" />
                     <input type="hidden" asp-for="Id" value="@Model.Id" />
