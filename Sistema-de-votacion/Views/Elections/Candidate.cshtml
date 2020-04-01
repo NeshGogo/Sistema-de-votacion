@@ -5,14 +5,15 @@
 }
 
 
-    <h4>Listado de Candidatos para la Posicion de @Model.CurrentPosition</h4>
+    <h4>Listado de Candidatos para la Posicion de @Model.CurrentPositionName</h4>
 
     <form asp-action="Candidate" method="post">
 
         <div>
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="Name" value="@Model.Name" />
-            <input type="hidden" asp-for="CurrentPosition" />
+            <input type="hidden" asp-for="CurrentPositionName" />
+            <input type="hidden" asp-for="CurrentPositionId" />
         </div>
         <div class="card-deck">
 
@@ -23,13 +24,12 @@
                     <div class="card-header text-center">
                         <h6>@(candidate.Name + " " + candidate.LastName)</h6>
                         <h6>@candidate.PoliticParty.Name</h6>
-                        <h6>@candidate.Position.Name</h6>
+                        <h6>@Model.CurrentPositionName</h6>
                     </div>
                     <img class="card-img-top imageThumbnail" src="@photoPath" asp-append-version="true" />
                     <div class="card-footer text-center">                       
                         <button type="submit" asp-controller="Elections" asp-route-candidateId="@candidate.Id"
                             class="btn btn-primary btn-sm" style="width:auto">Votar</button>
-
                     </div>
                 </div>
             }

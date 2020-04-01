@@ -1,31 +1,40 @@
-﻿@model ElectionVotationViewModel
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model ElectionVotationViewModel
 @{
     ViewData["Title"] = "Votation";
     Layout = "~/Views/Shared/_LayoutVotation.cshtml";
+
+
 }
 
-    <div class="text-center mb-5">
-        <h1 class="display-4">Bienvenido.</h1>
-        <h5 class="text-black-50">Ejerza su derecho al voto.</h5>
-    </div>
+<div class="text-center mb-5">
+    <h1 class="display-4">Bienvenido.</h1>
+    <h5 class="text-black-50">Ejerza su derecho al voto.</h5>
+</div>
 
 
 <div class="d-flex justify-content-around flex-wrap">
     @foreach (var position in Model.Postions)
     {
-        <div class="card m-3" style="width: 20rem;">
+        <div class="card m-3 bg-light" style="width: 20rem; @(HttpContextAccessor.HttpContext.Session.GetInt32(position.Name).HasValue? "background-color:lightgrey !important":"")">
             <div class="card-header text-center">
                 <h4>@position.Name</h4>
             </div>
             <img src="~/Images/Anonimo.jpg" class="card-img-top" alt="Imagen de icono anonimo">
             <div class="card-body text-center">
                 <p class="card-text text-black-50">Pulse el boton para seleccionar el candidato.</p>
-                <a class="btn btn-primary" href="@Url.Action("Candidate", position)" > Candidatos</a>
+                <form asp-action="Candidate" method="get">
+                    <input type="hidden" asp-for="Name" value="@Model.Name" />
+                    <input type="hidden" asp-for="Id" value="@Model.Id" />
+                    <input type="hidden" asp-for="CurrentPositionName" value="@position.Name" />
+                    <input type="hidden" asp-for="CurrentPositionId" value="@position.Id" />
+                    <input class="btn btn-primary @(HttpContextAccessor.HttpContext.Session.GetInt32(position.Name).HasValue? "disabled":"")" type="submit" value="Candidatos" />
+                </form>
             </div>
         </div>
-        }
+    }
 
-
-    </div>
+</div>
 
 

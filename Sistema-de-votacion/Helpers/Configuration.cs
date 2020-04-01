@@ -8,11 +8,6 @@ namespace Sistema_de_votacion.Helpers
     public static class Configuration
     {
         public static string Ciudadano => "_ciudadano";
-        public static string Presidente => "_presidente";
-        public static string Alcalde => "_alcalde";
-        public static string Regidor => "_regidor";
-        public static string Senador => "_senador";
-
         public static string CandidatesElectionCreateSelected => "_CandidatesElectionCreateSelected";
     }
 }
