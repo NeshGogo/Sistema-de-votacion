@@ -181,9 +181,14 @@ namespace Sistema_de_votacion.Controllers
             }            
             var electionResult =await _electionService.GetElectionResultsByIdAsync(id.Value);
             string electionName = (await _electionService.GetElectionByIdAsync(id)).Name;
-            var postions = electionResult.Select(e => e.Candidate).Select(c => c.Position.Name).Distinct().ToList();
-            var candidates = electionResult.Select(e => e.Candidate).ToList();
-            ResultDetailViewMode resultDetailViewMode = new ResultDetailViewMode { Postions = postions, Candidates = candidates, Name = electionName };
+
+            Election election = await _electionService.GetElectionByConditionAsync(e => e.IsActive == true).Result.Include(e => e.ElectionCadidate)
+                .ThenInclude(ec => ec.Candidate).ThenInclude(c => c.PoliticParty).FirstOrDefaultAsync();
+
+            var candidatess = election.ElectionCadidate.Select(ec => ec.Candidate).ToList();
+
+            var Votes = electionResult.Select(e => e.Candidate).GroupBy( c => c.Position.Name).ToList();
+            ResultDetailViewMode resultDetailViewMode = new ResultDetailViewMode {  Votes = Votes, Name = electionName, Candidates = candidatess };
 
             if (electionResult == null)
             {

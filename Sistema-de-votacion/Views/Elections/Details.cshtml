@@ -2,49 +2,57 @@
 
 @{
     ViewData["Title"] = "Detalle";
+    string photoPath = "/images/";
 }
-<div>
-    <h4>Candidato</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        @foreach (var postion in Model.Postions)
-        {
-            <div class="row">
-                <p >
-                    <span class="font-weight-bold">Posicion: </span>  @Html.DisplayFor(model => postion)
-                </p>
-                <div class="mb-5 col-md-12">
-                    @foreach (var candidate in Model.Candidates.Where(c => c.Position.Name == postion).Distinct())
-                    {
+<h4 class="display-4 text-center">
+    @Html.DisplayFor(model => model.Name).
+</h4>
+<hr />
 
-                        <p> <span class="font-weight-bold">Candidato:</span>
-                            @Html.DisplayFor(model => candidate.Name)
-                            @Html.DisplayFor(model => candidate.LastName)
-                        </p>
-                        <p>
-                            <span class="font-weight-bold">Cantidad de votos:</span>  @Model.Candidates.Where(c => c.Id == candidate.Id).Count()
-                        </p>
-                        <p>
-                            <span class="font-weight-bold">Porcentaje:</span> @((Model.Candidates.Where(c => c.Id == candidate.Id).Count() / Model.Candidates.Where(c => c.Position.Name == postion).Count()) * 100)%
-                        </p>
-                    }
 
-                </div>
+
+    @foreach (var votes in Model.Votes)
+    {
+        <div class="mt-4">
+            <h5>
+                <span class="font-weight-bold">Posicion: </span>  @votes.Key
+            </h5>
+            <div class="d-flex justify-content-lg-start flex-wrap">
+                @foreach (var candidate in Model.Candidates.Where(c => c.Position.Name == votes.Key))
+                {
+                    <div class="card m-3 shadow-sm" style="width:15rem;">
+                        <div class="card-header text-center">
+                            <h5 class="card-title">@(candidate.Name + " " + candidate.LastName)</h5>
+                        </div>
+                        <img class="card-img-top border rounded-circle mt-1" src="@($"{photoPath}{candidate.ProfilePhothoPath}")"
+                             asp-append-version="true" alt="imagen del candidato." />
+                        <div class="card-body text-center p-1">
+
+                            <p>
+                                @candidate.PoliticParty.Name <img width="30" height="30" src="@($"{photoPath}{candidate.PoliticParty.PartyLogoPath}")" alt="Logo del partido." />
+                            </p>
+                        
+                                <p class="mb-0">
+                                    <span class="font-weight-bold">Votos:</span>  @votes.Count(c => c.Id == candidate.Id)
+                                </p>
+                                <p>
+                                    <span class="font-weight-bold">Porcentaje:</span> @((votes.Count(c => c.Id == candidate.Id) / votes.Count()) * 100)%
+                                </p>
+                   
+                                
+                            
+                        </div>
+                    </div>
+
+                }
+
             </div>
-           
-            
-        }
+        </div>
 
 
-    </dl>
-</div>
-<div>
+    }
+
+<div class="mt-3">
     <a asp-action="ElectionsList" class="btn btn-primary">Volver</a>
 </div>
 

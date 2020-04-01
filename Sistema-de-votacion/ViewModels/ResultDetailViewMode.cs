@@ -11,7 +11,7 @@ namespace Sistema_de_votacion.ViewModels
     {
         [Display(Name ="Nombre")]
         public string Name { get; set; }
-        public List<string> Postions { get; set; }
         public List<Candidate> Candidates { get; set; }
+        public List<IGrouping<string,Candidate>> Votes { get; set; }
     }
 }
