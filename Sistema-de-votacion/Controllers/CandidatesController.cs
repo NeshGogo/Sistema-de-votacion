@@ -151,7 +151,7 @@ namespace Sistema_de_votacion.Controllers
                 }
                 Candidate candidate = new Candidate
                 {
-                    //Id= model.Id,
+                    Id= model.Id,
                     Name = model.Name,
                     LastName = model.LastName,
                     PoliticPartyId = model.PoliticPartyId,
