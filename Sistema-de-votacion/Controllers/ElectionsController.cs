@@ -77,11 +77,11 @@ namespace Sistema_de_votacion.Controllers
                     return View(votationLoginViewModel);
                 }
 
-                /*if (await _electionService.VerifyCitizenVoteAsync(votationLoginViewModel.DNI))
+                if (await _electionService.VerifyCitizenVoteAsync(votationLoginViewModel.DNI))
                 {
                     ViewBag.Message = "Usted ya ejercion su derecho al voto.";
                     return View(votationLoginViewModel);
-                }*/
+                }
 
                 Citizen citizen = await _citizenService.GetCitizenByConditionAsync(c => c.Dni == votationLoginViewModel.DNI).Result.FirstOrDefaultAsync();
                 HttpContext.Session.SetInt32(Configuration.Citizen, citizen.Id);
