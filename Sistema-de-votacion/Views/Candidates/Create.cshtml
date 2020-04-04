@@ -31,11 +31,16 @@
             </div>
             <div class="form-group">
                 <label asp-for="PoliticPartyId" class="control-label"></label>
-                <select asp-for="PoliticPartyId" class="form-control" asp-items="ViewBag.PoliticPartyId"></select>
+                <select asp-for="PoliticPartyId" class="form-control" asp-items="ViewBag.PoliticPartyId">
+                    <option value=0 selected>Favor seleccionar</option>
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="PositionId" class="control-label"></label>
-                <select asp-for="PositionId" class="form-control" asp-items="ViewBag.PositionId"></select>
+                <select asp-for="PositionId" class="form-control" asp-items="ViewBag.PositionId">
+                    <option value=0 selected>Favor seleccionar</option>
+                </select>
+                
             </div>
             <div class="form-group row">
                 <label asp-for="ProfilePhothoPath" class="col-sm-2 col-form-label"></label>

@@ -14,6 +14,8 @@ using Sistema_de_votacion.Services.PoliticParties;
 using Sistema_de_votacion.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
+using Sistema_de_votacion.Data.Elections;
+using Sistema_de_votacion.Services.Elections;
 
 namespace Sistema_de_votacion.Controllers
 {
@@ -23,14 +25,16 @@ namespace Sistema_de_votacion.Controllers
         private readonly ICandidateService _candidateService;
         private readonly IPoliticPartyService _politicPartyService;
         private readonly IPositionService _positionService;
+        private readonly IElectionRepository _electionRepository;
         private readonly IHostingEnvironment _hostingEnvironment;
 
-        public CandidatesController(ICandidateService candidateService,IPoliticPartyService politicPartyService, IPositionService positionService, IHostingEnvironment hostingEnvironment)
+        public CandidatesController(ICandidateService candidateService,IPoliticPartyService politicPartyService, IPositionService positionService, IElectionRepository electionRepository, IHostingEnvironment hostingEnvironment)
         {
             //_context = context;
             this._candidateService = candidateService;
             this._politicPartyService = politicPartyService;
             this._positionService = positionService;
+            this._electionRepository = electionRepository;
             this._hostingEnvironment = hostingEnvironment;
         }
 
@@ -77,9 +81,20 @@ namespace Sistema_de_votacion.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,LastName,PoliticPartyId,PositionId,ProfilePhothoPath,IsActive")] CandidateCreateViewModel model)
         {
+            if (model.PoliticPartyId==0)
+            {
+                ViewBag.Message = "Debe seleccionar un partido politico para crear o añadir un candidato.";
+                return View(model);
+            }
+            if (model.PositionId == 0)
+            {
+                ViewBag.Message = "Debe seleccionar una posicion electiva  para crear o añadir un candidato.";
+                return View(model);
+            }
             if (ModelState.IsValid)
             {
                 string uniqueFileName = ProcessUploadedFile(model);
+
                 if (uniqueFileName == null)
                     uniqueFileName = "Anonimo.png";
                 Candidate candidate = new Candidate
@@ -186,11 +201,12 @@ namespace Sistema_de_votacion.Controllers
         // GET: Candidates/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+
             if (id == null)
             {
                 return NotFound();
             }
-
+            
             var candidate = await _candidateService.GetCandidates()
                 .Include(c => c.PoliticParty)
                 .Include(c => c.Position)
@@ -209,8 +225,20 @@ namespace Sistema_de_votacion.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var candidate = await _candidateService.GetCandidates().FirstAsync(c=>c.Id==id);
+            var activeelection = _electionRepository.GetAll().ToList().FirstOrDefault(e => e.IsActive == true);
+
+            if (activeelection!=null)
+            {
+                ViewBag.Message = "No es posible eliminar un ciudadano porque actualmente existe una eleccion abierta.";
+                return RedirectToAction("Index");
+            }
+
+
             candidate.IsActive = false;
             _candidateService.UpdateCandidate(candidate);
+
+            
+
             //_candidateService.DeleteCandidate(candidate);
             //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

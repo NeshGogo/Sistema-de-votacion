@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Sistema_de_votacion.Data;
+using Sistema_de_votacion.Data.Elections;
 using Sistema_de_votacion.Data.PoliticParties;
 using Sistema_de_votacion.Models;
 using Sistema_de_votacion.Services.PoliticParties;
@@ -20,11 +21,13 @@ namespace Sistema_de_votacion.Controllers
     public class PoliticPartiesController : Controller
     {
         private readonly IPoliticPartyService _politicPartyService;
+        private readonly IElectionRepository _electionRepository;
         private readonly IHostingEnvironment _hostingEnvironment;
 
-        public PoliticPartiesController(IPoliticPartyService politicPartyService, IHostingEnvironment hostingEnvironment)
+        public PoliticPartiesController(IPoliticPartyService politicPartyService, IElectionRepository electionRepository, IHostingEnvironment hostingEnvironment)
         {
             this._politicPartyService = politicPartyService;
+            this._electionRepository = electionRepository;
             this._hostingEnvironment = hostingEnvironment;
         }
 
@@ -187,6 +190,12 @@ namespace Sistema_de_votacion.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var politicParty = await _politicPartyService.GetPoliticParties().FirstOrDefaultAsync(pp=>pp.Id==id);
+            var activeelection = _electionRepository.GetAll().ToList().FirstOrDefault(e => e.IsActive == true);
+            if (activeelection != null)
+            {
+                ViewBag.Message = "No es posible eliminar un partido politico porque actualmente existe una eleccion abierta.";
+                return RedirectToAction("Index");
+            }
             _politicPartyService.DeletePoliticParty(politicParty);
             return RedirectToAction(nameof(Index));
         }
