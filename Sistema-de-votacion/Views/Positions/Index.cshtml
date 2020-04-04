@@ -1,13 +1,14 @@
 ﻿@model IEnumerable<Sistema_de_votacion.Models.Position>
-
+@inject Sistema_de_votacion.Services.Elections.IElectionService  electionService
 @{
     ViewData["Title"] = "Index";
+    var disabled= await electionService.VerifyElectionOpenAsync() ? "disabled" : "";
 }
 
 <h1 class="display-4 text-center mb-lg-5">Listado de posiciones.</h1>
 <div class="d-flex justify-content-between mt-4">
     <p>
-        <a class="btn btn-outline-success" asp-action="Create">Añadir nuevo</a>
+        <a class="btn btn-outline-success @disabled" asp-action="Create">Añadir nuevo</a>
     </p>
     <form asp-action="Index" method="post" class="form">
         <label class="form-check form-check-inline">
@@ -57,9 +58,9 @@
                     @Html.DisplayFor(modelItem => item.IsActive)
                 </td>
                 <td>
-                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
                     <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@item.Id">Detalle</a> |
-                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                    <a class="btn btn-sm btn-primary @disabled" asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                    <a class="btn btn-sm btn-danger @disabled" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
                 </td>
             </tr>
         }

@@ -1,14 +1,15 @@
 ﻿@model IEnumerable<Sistema_de_votacion.Models.Election>
+@inject Sistema_de_votacion.Services.Elections.IElectionService  electionService
 
 @{
     ViewData["Title"] = "ElectionsList";
-    string EleccionActiva = (Model.FirstOrDefault(e => e.IsActive == true) != null) ? "disabled" : "";
+    var disabled= await electionService.VerifyElectionOpenAsync() ? "disabled" : "";
 }
 
 <h1 class="display-4 text-center">Listado de Elecciones.</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-success pointer-event @EleccionActiva">Añadir nuevo</a>
+    <a asp-action="Create" class="btn btn-outline-success @disabled">Añadir nuevo</a>
 </p>
 @if (Model.Count() == 0)
 {

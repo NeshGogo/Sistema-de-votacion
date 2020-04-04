@@ -58,7 +58,7 @@ namespace Sistema_de_votacion.Services.Elections
 
         public async Task<Election> InsertElectionAsync(Election election, List<Candidate> electionCandidates, List<Position> electionPosition )
         {
-            election.Date = DateTime.UtcNow;
+            election.Date = DateTime.Now;
             election.IsActive = true;
             Election result = await Task.FromResult(_electionRepository.Insert(election));
             if (result != null)

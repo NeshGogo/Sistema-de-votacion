@@ -21,10 +21,13 @@
             {
                 <div class="card m-3 shadow-sm"  style="width:15rem;">
                     <div class="card-header text-center">
-                        <h6 class="card-title">@(candidate.Name + " " + candidate.LastName)</h6>                        
+                        <h6 class="card-title">@(candidate.Name + " " + candidate.LastName)</h6>   
+                        <p class="m-0">@Model.CurrentPositionName</p>
                     </div>
-                    <img class="card-img-top border rounded-circle mt-1" src="@($"{photoPath}{candidate.ProfilePhothoPath}")" 
-                         asp-append-version="true"alt="imagen del candidato." />
+                    <div>
+                        <img class="card-img-top border rounded-circle mt-1" height="250" src="@($"{photoPath}{candidate.ProfilePhothoPath}")"
+                             asp-append-version="true" alt="imagen del candidato." />
+                    </div>                    
                     <div class="card-body text-center p-1">
                         <img  width="30" height="30" src="@($"{photoPath}{candidate.PoliticParty.PartyLogoPath}")"  alt="Logo del partido."/>
                         <p class="mb-0">@candidate.PoliticParty.Name</p>

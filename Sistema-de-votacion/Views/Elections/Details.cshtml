@@ -4,7 +4,7 @@
     ViewData["Title"] = "Detalle";
     string photoPath = "/images/";
 }
-<h4 class="display-4 text-center">
+<h4 class="display-4 text-center">Resultado de
     @Html.DisplayFor(model => model.Name).
 </h4>
 <hr />
@@ -13,34 +13,44 @@
 
     @foreach (var votes in Model.Votes)
     {
+        int total = votes.Count();
         <div class="mt-4">
+            
             <h5>
                 <span class="font-weight-bold">Posicion: </span>  @votes.Key
             </h5>
+            <p class="text-black-50"><span class="font-weight-bold">Votos:</span> @total</p>
             <div class="d-flex justify-content-lg-start flex-wrap">
-                @foreach (var candidate in Model.Candidates.Where(c => c.Position.Name == votes.Key))
+                @foreach (var candidate in Model.Candidates.Where(c => c.Position.Name == votes.Key).OrderByDescending(c => votes.Count(cc => cc.Id == c.Id)))
                 {
+                   
+                    float percent = (float)votes.Count(c => c.Id == candidate.Id) / (float)total;
+                    
                     <div class="card m-3 shadow-sm" style="width:15rem;">
                         <div class="card-header text-center">
                             <h5 class="card-title">@(candidate.Name + " " + candidate.LastName)</h5>
+                            <p class="m-0">@candidate.Position.Name</p>
                         </div>
-                        <img class="card-img-top border rounded-circle mt-1" src="@($"{photoPath}{candidate.ProfilePhothoPath}")"
-                             asp-append-version="true" alt="imagen del candidato." />
+                        <div>
+                            <img class="card-img-top border rounded-circle mt-1" height="250" src="@($"{photoPath}{candidate.ProfilePhothoPath}")"
+                                 asp-append-version="true" alt="imagen del candidato." />
+                        </div>
+                        
                         <div class="card-body text-center p-1">
 
                             <p>
                                 @candidate.PoliticParty.Name <img width="30" height="30" src="@($"{photoPath}{candidate.PoliticParty.PartyLogoPath}")" alt="Logo del partido." />
                             </p>
-                        
-                                <p class="mb-0">
-                                    <span class="font-weight-bold">Votos:</span>  @votes.Count(c => c.Id == candidate.Id)
-                                </p>
-                                <p>
-                                    <span class="font-weight-bold">Porcentaje:</span> @((votes.Count(c => c.Id == candidate.Id) / votes.Count()) * 100)%
-                                </p>
-                   
-                                
-                            
+
+                            <p class="mb-0">
+                                <span class="font-weight-bold">Votos:</span>  @votes.Count(c => c.Id == candidate.Id)
+                            </p>
+
+                            <p>
+                                <span class="font-weight-bold">Porcentaje:</span> @(Math.Round(percent * 100))%
+                            </p>
+
+
                         </div>
                     </div>
 

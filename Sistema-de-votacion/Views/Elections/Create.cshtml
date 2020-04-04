@@ -42,8 +42,9 @@
                 <tbody>
                     @foreach (var candidate in groupElectionCandidate)
                     {
+                        string checkedd = (candidate.Name == "NULL") ? "checked" : "";
 
-                        <tr>
+                        <tr style="background-color:@(candidate.Name == "NULL"?"lightgoldenrodyellow":"")">
                             <td hidden>
                                 @Html.DisplayFor(modelItem => candidate.Id)
                             </td>
@@ -56,7 +57,7 @@
                             </td>
                             <td>
                                 <label class="form-group form-check">
-                                    @Html.CheckBoxFor(model => candidate.Selected, new { @id = "Candidates" })
+                                    @Html.CheckBoxFor(model => candidate.Selected, new { @checked = checkedd})
                                 </label>
                             </td>
                         </tr>
