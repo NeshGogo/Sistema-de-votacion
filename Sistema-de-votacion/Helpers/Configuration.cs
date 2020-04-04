@@ -7,7 +7,7 @@ namespace Sistema_de_votacion.Helpers
 {
     public static class Configuration
     {
-        public static string Ciudadano => "_ciudadano";
+        public static string Citizen => "_citizen";
         public static string CandidatesElectionCreateSelected => "_CandidatesElectionCreateSelected";
     }
 }
