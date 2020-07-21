@@ -28,9 +28,11 @@ namespace Sistema_de_votacion.Controllers
         // GET: Citizens
         public async Task<IActionResult> Index()
         {
-            var citizens = await _citizenServices.GetCitizenByConditionAsync(c => c.IsActive == true );
-            return View( citizens.ToList().OrderBy(c => new { c.Name, c.LastName }));
+            var citizens = (await _citizenServices.GetCitizenByConditionAsync(c => c.IsActive == true ))
+                .OrderBy(c => c.Name).ThenBy(c => c.LastName);
+            return View(citizens.ToList());
         }
+
         [HttpPost]
         public async Task<IActionResult> Index( string activeParam)
         {
