@@ -1,4 +1,4 @@
-﻿using System;
+﻿  using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,7 +35,8 @@ namespace Sistema_de_votacion.Services.Candidates
         }
         public Candidate DeleteCandidate(Candidate candidate)
         {
-            return _candidateRepository.Delete(candidate);
+            candidate.IsActive = false;
+            return _candidateRepository.Update(candidate);
         }
 
     }

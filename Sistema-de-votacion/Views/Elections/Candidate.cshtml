@@ -1,43 +1,67 @@
 ﻿@model ElectionVotationViewModel
-@{ 
-   Layout = "~/Views/Shared/_LayoutVotation.cshtml";
-   string photoPath = "/images/";
+@{
+    Layout = "~/Views/Shared/_LayoutVotation.cshtml";
+    string photoPath = "/images/";
 }
 
 
-    <h4 class="display-4 text-center">Candidatos para @Model.CurrentPositionName.</h4>
-    <hr />
-    <form asp-action="Candidate" method="post">
+<h4 class="display-4 text-center">Candidatos para @Model.CurrentPositionName.</h4>
+<hr />
+<form asp-action="Candidate" method="post">
 
-        <div>
-            <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="Name" value="@Model.Name" />
-            <input type="hidden" asp-for="CurrentPositionName" />
-            <input type="hidden" asp-for="CurrentPositionId" />
-        </div>
-        <div class="d-flex justify-content-around flex-wrap">
+    <div>
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Name" value="@Model.Name" />
+        <input type="hidden" asp-for="CurrentPositionName" />
+        <input type="hidden" asp-for="CurrentPositionId" />
+    </div>
+    <div class="d-flex justify-content-around flex-wrap">
 
-            @foreach (var candidate in Model.Candidates)
-            {
-                <div class="card m-3 shadow-sm"  style="width:15rem;">
-                    <div class="card-header text-center">
-                        <h6 class="card-title">@(candidate.Name + " " + candidate.LastName)</h6>   
-                        <p class="m-0">@Model.CurrentPositionName</p>
-                    </div>
-                    <div>
-                        <img class="card-img-top border rounded-circle mt-1" height="250" src="@($"{photoPath}{candidate.ProfilePhothoPath}")"
-                             asp-append-version="true" alt="imagen del candidato." />
-                    </div>                    
-                    <div class="card-body text-center p-1">
-                        <img  width="30" height="30" src="@($"{photoPath}{candidate.PoliticParty.PartyLogoPath}")"  alt="Logo del partido."/>
-                        <p class="mb-0">@candidate.PoliticParty.Name</p>
-                    </div>
-                    <div class="card-footer text-center">                       
-                        <button type="submit" asp-controller="Elections" asp-route-candidateId="@candidate.Id"
-                            class="btn btn-primary btn-sm" style="width:auto">Votar</button>
-                    </div>
+        @foreach (var candidate in Model.Candidates)
+        {
+            <div class="card m-3 shadow-sm" style="width:15rem;">
+                <div class="card-header text-center">
+                    <h6 class="card-title">@(candidate.Name + " " + candidate.LastName)</h6>
+                    <p class="m-0">@Model.CurrentPositionName</p>
                 </div>
-            }
+                <div>
+                    <img class="card-img-top border rounded-circle mt-1" height="250" src="@($"{photoPath}{candidate.ProfilePhothoPath}")"
+                         asp-append-version="true" alt="imagen del candidato." />
+                </div>
+                <div class="card-body text-center p-1">
+                    <img width="30" height="30" src="@($"{photoPath}{candidate.PoliticParty.PartyLogoPath}")" alt="Logo del partido." />
+                    <p class="mb-0">@candidate.PoliticParty.Name</p>
+                </div>
+                <div class="card-footer text-center">
+                    <button type="submit" asp-controller="Elections" asp-route-candidateId="@candidate.Id"
+                            class="btn btn-primary btn-sm" style="width:auto; display:none" id="confirmButton@(candidate.Id)">
+                        Confimar
+                    </button>
+                    <button id="voteButton@(candidate.Id)" type="button" class="btn btn-primary btn-sm"
+                            onclick="confirmVote('confirmButton@(candidate.Id)', 'voteButton@(candidate.Id)',
+                            '@(candidate.Name + " "+candidate.LastName)')">
+                        Votar
+                    </button>
 
-        </div>
-    </form>
+                </div>
+            </div>
+        }
+
+    </div>
+</form>
+@section Scripts {
+    <script>
+        debugger;
+        function confirmVote(confirmId, voteId, candidateName) {
+            debugger;
+            console.log("Entro");
+            var value = confirm(`Esta seguro que desea votar por este candidato ${candidateName}?`);
+            var confirmButton = document.getElementById(confirmId);
+            var voteButton = document.getElementById(voteId);
+            if (value) {
+                voteButton.style.display = "none";
+                confirmButton.style.display = "initial";
+            }
+        }
+    </script>
+}

@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Sistema_de_votacion.Data.Elections;
+using Sistema_de_votacion.Models;
+using Sistema_de_votacion.Services.Elections;
+using Sistema_de_votacion.Services.PoliticParties;
+using Sistema_de_votacion.ViewModels;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Sistema_de_votacion.Data;
-using Sistema_de_votacion.Data.Elections;
-using Sistema_de_votacion.Data.PoliticParties;
-using Sistema_de_votacion.Models;
-using Sistema_de_votacion.Services.PoliticParties;
-using Sistema_de_votacion.ViewModels;
 
 namespace Sistema_de_votacion.Controllers
 {
@@ -23,12 +20,15 @@ namespace Sistema_de_votacion.Controllers
         private readonly IPoliticPartyService _politicPartyService;
         private readonly IElectionRepository _electionRepository;
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IElectionService _electionService;
 
-        public PoliticPartiesController(IPoliticPartyService politicPartyService, IElectionRepository electionRepository, IHostingEnvironment hostingEnvironment)
+        public PoliticPartiesController(IPoliticPartyService politicPartyService, IElectionRepository electionRepository,  
+            IHostingEnvironment hostingEnvironment, IElectionService electionService )
         {
             this._politicPartyService = politicPartyService;
             this._electionRepository = electionRepository;
             this._hostingEnvironment = hostingEnvironment;
+            this._electionService = electionService;
         }
 
         // GET: PoliticParties
@@ -56,8 +56,10 @@ namespace Sistema_de_votacion.Controllers
         }
 
         // GET: PoliticParties/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            if (await _electionService.VerifyElectionOpenAsync())
+                return RedirectToAction("Index");
             return View();
         }
 
@@ -91,6 +93,8 @@ namespace Sistema_de_votacion.Controllers
         // GET: PoliticParties/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (await _electionService.VerifyElectionOpenAsync())
+                return RedirectToAction("Index");
             if (id == null)
             {
                 return NotFound();
@@ -169,6 +173,8 @@ namespace Sistema_de_votacion.Controllers
         // GET: PoliticParties/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            if (await _electionService.VerifyElectionOpenAsync())
+                return RedirectToAction("Index");
             if (id == null)
             {
                 return NotFound();
@@ -189,13 +195,10 @@ namespace Sistema_de_votacion.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var politicParty = await _politicPartyService.GetPoliticParties().FirstOrDefaultAsync(pp=>pp.Id==id);
-            var activeelection = _electionRepository.GetAll().ToList().FirstOrDefault(e => e.IsActive == true);
-            if (activeelection != null)
-            {
-                ViewBag.Message = "No es posible eliminar un partido politico porque actualmente existe una eleccion abierta.";
+            if (await _electionService.VerifyElectionOpenAsync())
                 return RedirectToAction("Index");
-            }
+            var politicParty = await _politicPartyService.GetPoliticParties().FirstOrDefaultAsync(pp=>pp.Id==id);
+         
             _politicPartyService.DeletePoliticParty(politicParty);
             return RedirectToAction(nameof(Index));
         }

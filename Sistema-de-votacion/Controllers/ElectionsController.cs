@@ -84,7 +84,7 @@ namespace Sistema_de_votacion.Controllers
                 }
 
                 Citizen citizen = await _citizenService.GetCitizenByConditionAsync(c => c.Dni == votationLoginViewModel.DNI).Result.FirstOrDefaultAsync();
-                HttpContext.Session.SetInt32(Configuration.Ciudadano, citizen.Id);
+                HttpContext.Session.SetInt32(Configuration.Citizen, citizen.Id);
                 return RedirectToAction("Votation");                 
             }
 
@@ -93,7 +93,7 @@ namespace Sistema_de_votacion.Controllers
 
         public async Task<IActionResult> Votation(ElectionVotationViewModel electionVotationViewModel)
         {
-            if (!HttpContext.Session.GetInt32(Configuration.Ciudadano).HasValue)
+            if (!HttpContext.Session.GetInt32(Configuration.Citizen).HasValue)
                 return RedirectToAction(nameof(Index));
             Election election = await _electionService.GetElectionByConditionAsync(e => e.IsActive == true).Result.Include(e => e.ElectionPosition).ThenInclude(ep => ep.Position).FirstOrDefaultAsync();
             if (electionVotationViewModel.Id == 0)
@@ -110,7 +110,7 @@ namespace Sistema_de_votacion.Controllers
         [HttpGet]
         public async Task<IActionResult> Candidate(ElectionVotationViewModel electionVotationViewModel)
         {
-            if (!HttpContext.Session.GetInt32(Configuration.Ciudadano).HasValue)
+            if (!HttpContext.Session.GetInt32(Configuration.Citizen).HasValue)
                 return RedirectToAction(nameof(Index));
 
             if (HttpContext.Session.GetInt32(electionVotationViewModel.CurrentPositionName).HasValue)
@@ -130,7 +130,7 @@ namespace Sistema_de_votacion.Controllers
         public async Task<IActionResult> Candidate(ElectionVotationViewModel model, int candidateId)
         {
             int postionVoted = 0;
-            int? citizenId = HttpContext.Session.GetInt32(Configuration.Ciudadano);
+            int? citizenId = HttpContext.Session.GetInt32(Configuration.Citizen);
             if (!citizenId.HasValue)            
                 return RedirectToAction(nameof(Index));          
 
