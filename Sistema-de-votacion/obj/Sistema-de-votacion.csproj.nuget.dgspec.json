@@ -1,0 +1,90 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\jrosa\\Documents\\Proyectos C# y ASP.NET Core (En otra maquina)\\NeshGogo\\Sistema-de-votacion (1)\\Sistema-de-votacion\\Sistema-de-votacion.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\jrosa\\Documents\\Proyectos C# y ASP.NET Core (En otra maquina)\\NeshGogo\\Sistema-de-votacion (1)\\Sistema-de-votacion\\Sistema-de-votacion.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\jrosa\\Documents\\Proyectos C# y ASP.NET Core (En otra maquina)\\NeshGogo\\Sistema-de-votacion (1)\\Sistema-de-votacion\\Sistema-de-votacion.csproj",
+        "projectName": "Sistema-de-votacion",
+        "projectPath": "C:\\Users\\jrosa\\Documents\\Proyectos C# y ASP.NET Core (En otra maquina)\\NeshGogo\\Sistema-de-votacion (1)\\Sistema-de-votacion\\Sistema-de-votacion.csproj",
+        "packagesPath": "C:\\Users\\jrosa\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jrosa\\Documents\\Proyectos C# y ASP.NET Core (En otra maquina)\\NeshGogo\\Sistema-de-votacion (1)\\Sistema-de-votacion\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Microsoft\\Xamarin\\NuGet\\"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\jrosa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.2"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.2": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.2": {
+          "dependencies": {
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.AspNetCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Microsoft.AspNetCore.Razor.Design": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.2.0, )",
+              "autoReferenced": true
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[2.2.4, )"
+            },
+            "NETCore.MailKit": {
+              "target": "Package",
+              "version": "[2.0.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.201\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
