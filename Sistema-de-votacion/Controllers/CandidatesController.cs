@@ -25,23 +25,24 @@ namespace Sistema_de_votacion.Controllers
         private readonly ICandidateService _candidateService;
         private readonly IPoliticPartyService _politicPartyService;
         private readonly IPositionService _positionService;
-        private readonly IElectionRepository _electionRepository;
+        private readonly IElectionService _electionService;
         private readonly IHostingEnvironment _hostingEnvironment;
 
-        public CandidatesController(ICandidateService candidateService,IPoliticPartyService politicPartyService, IPositionService positionService, IElectionRepository electionRepository, IHostingEnvironment hostingEnvironment)
+        public CandidatesController(ICandidateService candidateService,IPoliticPartyService politicPartyService, IPositionService positionService, IElectionService electionService, IHostingEnvironment hostingEnvironment)
         {
             //_context = context;
             this._candidateService = candidateService;
             this._politicPartyService = politicPartyService;
             this._positionService = positionService;
-            this._electionRepository = electionRepository;
+            this._electionService = electionService;
             this._hostingEnvironment = hostingEnvironment;
         }
 
         // GET: Candidates
         public async Task<IActionResult> Index()
         {
-            var electionDBContext = _candidateService.GetCandidates().Where(c=>c.IsActive==true).OrderBy(c=>c.Name).Include(c => c.PoliticParty).Include(c => c.Position);
+            var electionDBContext = _candidateService.GetCandidates().Include(c => c.PoliticParty).Include(c => c.Position)
+                .OrderBy(c=> c.Position.Name).ThenBy(c=> c.Name);
             return View(await electionDBContext.ToListAsync());
         }
 
@@ -68,7 +69,8 @@ namespace Sistema_de_votacion.Controllers
         //GET: Candidates/Create
         public async Task<IActionResult> Create()
         {
-
+            if (await _electionService.VerifyElectionOpenAsync())
+                return RedirectToAction("Index");
             ViewData["PoliticPartyId"] = new SelectList(_politicPartyService.GetPoliticParties().Where(p=> p.IsActive == true), "Id", "Name");
             ViewData["PositionId"] = new SelectList((await _positionService.GetPositionsAsync()).Where(p => p.IsActive == true), "Id", "Name");
             return View();
@@ -93,6 +95,7 @@ namespace Sistema_de_votacion.Controllers
             }
             if (ModelState.IsValid)
             {
+                //comentario
                 string uniqueFileName = ProcessUploadedFile(model);
 
                 if (uniqueFileName == null)
@@ -119,6 +122,8 @@ namespace Sistema_de_votacion.Controllers
         // GET: Candidates/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (await _electionService.VerifyElectionOpenAsync())
+                return RedirectToAction("Index");
             if (id == null)
             {
                 return NotFound();
@@ -201,7 +206,8 @@ namespace Sistema_de_votacion.Controllers
         // GET: Candidates/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-
+            if (await _electionService.VerifyElectionOpenAsync())
+                return RedirectToAction("Index");
             if (id == null)
             {
                 return NotFound();
@@ -225,17 +231,14 @@ namespace Sistema_de_votacion.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var candidate = await _candidateService.GetCandidates().FirstAsync(c=>c.Id==id);
-            var activeelection = _electionRepository.GetAll().ToList().FirstOrDefault(e => e.IsActive == true);
+            
 
-            if (activeelection!=null)
-            {
-                ViewBag.Message = "No es posible eliminar un ciudadano porque actualmente existe una eleccion abierta.";
-                return RedirectToAction("Index");
-            }
+            if (await _electionService.VerifyElectionOpenAsync())                            
+                return RedirectToAction("Index");          
 
 
-            candidate.IsActive = false;
-            _candidateService.UpdateCandidate(candidate);
+            
+            _candidateService.DeleteCandidate(candidate);
 
             
 
